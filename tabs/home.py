@@ -124,7 +124,7 @@ def layout_home():
 
                     html.Div([
                         _action_btn_internal("bi bi-grid",   "Aplicación", "Ver dashboard",     "home-btn-dashboard-real"),
-                        _action_btn_link("bi bi-github",     "Código",     "Ver en GitHub",     "https://github.com/alemengo76"),
+                        _action_btn_link("bi bi-github",     "Código",     "Ver en GitHub",     "https://github.com/alemengo76/FraudDetection"),
                         _action_btn_link("bi bi-database",   "Dataset",    "Ver en Kaggle",     "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"),
                         _action_btn_internal("bi bi-people", "Equipo",     "Conocer el equipo", "home-btn-about-real"),
                     ], style={
