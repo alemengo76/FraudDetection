@@ -1,16 +1,18 @@
-# Fraud Detection Dashboard 🔍
+# Fraud Detection Dashboard
 
 **Detección de Fraude Financiero con Tarjetas de Crédito**
 
-![Dashboard Screenshot](assets/imagen_home.jpeg)
+![Dashboard Screenshot](assets/imagen_presentacion.jpeg)
 
 ---
 
 ## Descripción del Proyecto
 
-El fraude con tarjetas de crédito representa una amenaza significativa para el sistema financiero global. Detectarlo a tiempo es crucial para proteger a los clientes y evitar pérdidas millonarias.
+El fraude con tarjetas de crédito es una gran amenaza para el sistema financiero en todo el mundo. Entonces, es importante detectarlo a tiempo para proteger a los clientes y evitar pérdidas que pueden llegar a ser millonarias.
 
-Este proyecto presenta un dashboard interactivo desarrollado con Python y Dash que permite explorar y analizar el dataset **Credit Card Fraud Detection** del ULB Machine Learning Group. El dataset contiene **283.726 transacciones** de titulares de tarjetas europeos y fue explorado mediante un análisis exploratorio de datos (EDA) exhaustivo, identificando patrones y variables que distinguen transacciones fraudulentas de legítimas.
+En este proyecto se usa el dataset **Credit Card Fraud Detection del ULB Machine Learning Group**. Dicho dataset tiene 283.726 transacciones de titulares europeos que se exploraron por medio de un análisis exploratorio de datos, en el que se identificaron patrones y variables que separan transacciones fraudulentas de no fraudulentas.
+
+El análisis incluye pruebas no paramétricas, tamaño de efecto, correlaciones, VIF y, próximamente, un modelo de regresión logística para predicción interactiva.
 
 El análisis incluye:
 - Análisis Exploratorio de Datos (EDA)
@@ -25,7 +27,7 @@ El análisis incluye:
 
 El dataset utilizado es el [Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) del ULB Machine Learning Group, disponible en Kaggle.
 
-> ⚠️ **Nota:** El archivo `creditcard.csv` (~144 MB) no está incluido en este repositorio por su tamaño. Descárgalo directamente desde Kaggle y colócalo en la carpeta `data/`.
+> **Nota:** El archivo `creditcard.csv` no está incluido en el repositorio por su tamaño. Descárguelo directamente desde Kaggle y colóquelo en la carpeta `data/`.
 
 ---
 
