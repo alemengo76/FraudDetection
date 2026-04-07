@@ -1,0 +1,311 @@
+/*Importar fuente*/
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/*Tipografía y fondo global*/
+body {
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
+    background-color: #eef2f7;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(46, 134, 193, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(26, 37, 64, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+    color: #2c3e50;
+}
+
+/*Barra de navegación superior*/
+.navbar-custom {
+    background: linear-gradient(135deg, #1a2540 0%, #1f3460 100%);
+    padding: 14px 28px;
+    border-bottom: 3px solid #2e86c1;
+    box-shadow: 0 4px 20px rgba(26, 37, 64, 0.25);
+}
+
+.navbar-brand-text {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.navbar-subtitle {
+    color: #7fb3d3;
+    font-size: 0.78rem;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/*Pestañas*/
+.tab-content-wrapper {
+    padding: 32px 24px;
+}
+
+.custom-tabs .nav-link {
+    color: #4a5568 !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 4px 4px 0 0;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.2px;
+}
+
+.custom-tabs .nav-link:hover {
+    background-color: #dce8f5;
+    color: #1a2540 !important;
+}
+
+.custom-tabs .nav-link.active {
+    background-color: #2e86c1 !important;
+    color: #ffffff !important;
+    border-bottom: none;
+    box-shadow: 0 -2px 8px rgba(46, 134, 193, 0.25);
+}
+
+/*Cards*/
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(26, 37, 64, 0.09);
+    background-color: #ffffff;
+    transition: box-shadow 0.25s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 8px 28px rgba(26, 37, 64, 0.14);
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #1a2540 0%, #1f3460 100%);
+    color: #ffffff;
+    padding: 13px 20px;
+    border-radius: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border-bottom: 2px solid #2e86c1;
+}
+
+/*KPI cards*/
+.kpi-card {
+    text-align: center;
+    padding: 24px 16px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(26, 37, 64, 0.09);
+    border-bottom: 3px solid #2e86c1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1a2540, #2e86c1, #5dade2);
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(46, 134, 193, 0.18);
+}
+
+.kpi-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #1a2540;
+    line-height: 1;
+    letter-spacing: -0.5px;
+}
+
+.kpi-label {
+    font-size: 0.73rem;
+    color: #718096;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 600;
+}
+
+.kpi-accent { color: #2e86c1; }
+.kpi-danger { color: #1f618d; }
+
+/*Secciones de texto*/
+.section-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1a2540;
+    border-left: 4px solid #2e86c1;
+    padding-left: 12px;
+    margin-bottom: 14px;
+    margin-top: 24px;
+    letter-spacing: 0.1px;
+    position: relative;
+}
+
+
+.section-body {
+    font-size: 0.93rem;
+    color: #4a5568;
+    line-height: 1.75;
+    font-weight: 400;
+}
+
+/*Tablas*/
+table.dash-table {
+    font-size: 0.82rem;
+}
+
+/*Formulario predicción*/
+.input-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 4px;
+}
+
+.predict-btn {
+    background: linear-gradient(135deg, #2e86c1, #1f618d);
+    color: #fff;
+    border: none;
+    padding: 11px 32px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(46, 134, 193, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.predict-btn:hover {
+    background: linear-gradient(135deg, #1a6696, #1a2540);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(46, 134, 193, 0.4);
+}
+
+.result-box {
+    border-radius: 10px;
+    padding: 18px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 16px;
+    letter-spacing: 0.2px;
+}
+
+.result-fraude {
+    background: linear-gradient(135deg, #fdecea, #fce8e6);
+    color: #c0392b;
+    border: 1px solid #f5c6cb;
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.12);
+}
+
+.result-no-fraude {
+    background: linear-gradient(135deg, #e8f6f3, #e3f5ef);
+    color: #1e8449;
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 4px 12px rgba(30, 132, 73, 0.12);
+}
+
+/*Dropdowns*/
+.Select-control {
+    border-radius: 8px !important;
+    border-color: #cbd5e0 !important;
+    font-size: 0.85rem !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.Select-control:hover {
+    border-color: #2e86c1 !important;
+}
+
+.is-focused .Select-control {
+    border-color: #2e86c1 !important;
+    box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.15) !important;
+}
+
+/*Separadores de sección*/
+.section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #cbd5e0, transparent);
+    margin: 28px 0;
+    border: none;
+}
+
+/*Badges / etiquetas*/
+.badge-custom {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/*Footer*/
+.footer {
+    text-align: center;
+    color: #a0aec0;
+    font-size: 0.76rem;
+    padding: 20px;
+    margin-top: 48px;
+    border-top: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, transparent, rgba(26, 37, 64, 0.02));
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+/*Scrollbar personalizado*/
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2e86c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1a2540;
+}
+
+.nav-pill {
+    color: #7fb3d3;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.2px;
+}
+
+.nav-pill:hover {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+}
+
+.nav-pill-active {
+    background: #2e86c1;
+    color: #ffffff !important;
+}
+
+.action-btn {
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.action-btn:hover {
+    background: #dce8f5 !important;
+    border-color: #2e86c1 !important;
+    transform: translateY(-2px);
+}
