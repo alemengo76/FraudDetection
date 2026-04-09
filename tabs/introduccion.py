@@ -52,13 +52,11 @@ def layout():
                     "alignItems": "center"
                 }
             ),
-
             dbc.CardBody([
                 html.P(
                     "El fraude financiero no se limita a una pérdida económica, sus efectos van más allá:",
                     className="section-body"
                 ),
-
                 dbc.Row([
                     _impact_item("Pérdidas directas",
                         "Cargos no autorizados que afectan al banco y al cliente."),
@@ -70,7 +68,7 @@ def layout():
                         "Incidentes recurrentes afectan la credibilidad de los bancos."),
                 ]),
             ]),
-        ]),
+        ], className="hallazgo-card"),
         width=12
     ),
     className="mb-4"
@@ -85,7 +83,7 @@ def layout():
             ),
         ]), width=12)),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
     
 
 
@@ -116,7 +114,8 @@ def _impact_item(title: str, desc: str):
         html.Div(title, style={"fontWeight": 700, "fontSize": "0.85rem",
                                 "color": "#1a2540", "marginBottom": "4px"}),
         html.Div(desc, className="section-body", style={"marginBottom": 0}),
-    ], style={"borderLeft": "3px solid #2e86c1", "paddingLeft": "10px",
+    ], className="hallazgo-card",
+                            style={"borderLeft": "3px solid #2e86c1", "paddingLeft": "10px",
               "marginBottom": "12px"}), md=3)
 
 

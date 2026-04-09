@@ -78,7 +78,7 @@ def layout():
                             dbc.CardBody(
                                 dcc.Graph(figure=_fig_dona(), config={"displayModeBar": False})
                             ),
-                        ]),
+                        ], className="hallazgo-card mb-3"),
                         md=5,
                     ),
 
@@ -120,7 +120,7 @@ def layout():
             ),
         ]),
     ]),
-], className="mb-3"),
+], className="hallazgo-card mb-3"),
 
                         # Falso negativo
                         dbc.Card([
@@ -161,7 +161,7 @@ def layout():
                 className="mb-4",
             ),
         ],
-        className="tab-content-wrapper",
+        className="tab-content-wrapper tab-fade-in",
     )
 
 

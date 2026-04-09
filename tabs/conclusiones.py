@@ -36,7 +36,8 @@ def _kpi_card(value: str, label: str, color: str):
                 "letterSpacing": "0.05em",
                 "marginTop": "6px",
             }),
-        ], style={
+        ], className="kpi-card",
+            style={
             "background": "#fff",
             "border": f"2px solid {color}",
             "borderRadius": "12px",
@@ -52,19 +53,6 @@ def _kpi_card(value: str, label: str, color: str):
 def _hallazgo_card(numero: str, titulo: str, cuerpo: str, color: str):
     return dbc.Col(
         html.Div([
-            # Número decorativo
-            html.Div(numero, style={
-                "fontSize": "3rem",
-                "fontWeight": "900",
-                "color": color,
-                "opacity": "0.15",
-                "lineHeight": "1",
-                "position": "absolute",
-                "top": "10px",
-                "right": "14px",
-                "fontFamily": "Georgia, serif",
-                "userSelect": "none",
-            }),
             #Barra de acento
             html.Div(style={
                 "width": "36px",
@@ -86,7 +74,8 @@ def _hallazgo_card(numero: str, titulo: str, cuerpo: str, color: str):
                 "lineHeight": "1.6",
                 "marginBottom": 0,
             }),
-        ], style={
+        ], className="hallazgo-card",
+            style={
             "background": "#fff",
             "borderRadius": "12px",
             "padding": "20px 16px 16px 16px",
@@ -95,6 +84,7 @@ def _hallazgo_card(numero: str, titulo: str, cuerpo: str, color: str):
             "position": "relative",
             "overflow": "hidden",
             "height": "100%",
+            
         }),
         md=4, className="mb-3",
     )
@@ -270,7 +260,7 @@ dbc.Row(dbc.Col(dbc.Card([
             className="section-body", style={"marginBottom": 0},
         ),
     ]),
-]), width=12), className="mb-4"),
+],className="hallazgo-card"), width=12), className="mb-4"),
 
     
         dbc.Row(dbc.Col(html.Div([
@@ -317,9 +307,9 @@ dbc.Row([
                 _ref("Hosmer, D. W., Lemeshow, S., & Sturdivant, R. X. (2013). "
                      "Applied Logistic Regression (3rd ed.). Wiley."),
             ]),
-        ]), width=12)),
+        ], className="hallazgo-card"), width=12)),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
     
     
 def register_callbacks(app):

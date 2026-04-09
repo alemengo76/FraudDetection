@@ -8,137 +8,296 @@ import dash_bootstrap_components as dbc
 from dash import html, Input, Output, callback, ctx, no_update
 
 
-def _btn_style():
-    return {
-        "flex": "1 1 0",
-        "minWidth": "0",
-        "padding": "16px 10px",
-        "borderRadius": "12px",
-        "background": "#fff",
-        "border": "1px solid #e2e8f0",
-        "cursor": "pointer",
-        "textDecoration": "none",
-        "display": "block",
-    }
 
-def _icon(icon_class: str):
-    return html.I(className=icon_class, style={
-        "fontSize": "20px",
-        "color": "#2e86c1",
-        "marginBottom": "8px",
-        "display": "block",
+
+def _pill_btn_link(icon, label, href):
+    return html.A(
+        href=href, target="_blank",
+        children=[html.I(className=icon, style={"marginRight": "7px"}), label],
+        style={
+            "display": "inline-flex", "alignItems": "center",
+            "padding": "9px 20px", "borderRadius": "20px",
+            "border": "1px solid rgba(74,111,165,0.45)",
+            "background": "rgba(74,111,165,0.15)",
+            "color": "#7fb3d3", "fontSize": "0.82rem",
+            "fontWeight": "600", "textDecoration": "none",
+            "transition": "all 0.2s ease", "cursor": "pointer",
+            "letterSpacing": "0.2px",
+        },
+        className="home-pill-btn",
+    )
+
+
+def _pill_btn_internal(icon, label, btn_id):
+    return html.Div(
+        id=btn_id, n_clicks=0,
+        children=[html.I(className=icon, style={"marginRight": "7px"}), label],
+        style={
+            "display": "inline-flex", "alignItems": "center",
+            "padding": "9px 20px", "borderRadius": "20px",
+            "border": "1px solid rgba(74,111,165,0.45)",
+            "background": "rgba(74,111,165,0.15)",
+            "color": "#7fb3d3", "fontSize": "0.82rem",
+            "fontWeight": "600", "cursor": "pointer",
+            "transition": "all 0.2s ease", "letterSpacing": "0.2px",
+        },
+        className="home-pill-btn",
+    )
+
+
+def _primary_btn(icon, label, btn_id):
+    return html.Div(
+        id=btn_id, n_clicks=0,
+        children=[html.I(className=icon, style={"marginRight": "8px"}), label],
+        style={
+            "display": "inline-flex", "alignItems": "center",
+            "padding": "12px 28px", "borderRadius": "8px",
+            "background": "#2e86c1",
+            "boxShadow": "0 4px 18px rgba(46,134,193,0.45)",
+            "color": "#fff", "fontSize": "0.88rem",
+            "fontWeight": "700", "cursor": "pointer",
+            "transition": "all 0.22s ease", "letterSpacing": "0.3px",
+            "border": "none",
+        },
+        className="home-primary-btn",
+    )
+
+
+def _float_card(icon_class, fc_color, value, label):
+    icon_colors = {
+        "fc-blue":   ("rgba(46,134,193,0.2)",  "#4a9fe0"),
+        "fc-red":    ("rgba(192,57,43,0.2)",    "#e74c3c"),
+        "fc-amber":  ("rgba(243,156,18,0.2)",   "#f39c12"),
+        "fc-green":  ("rgba(39,174,96,0.2)",    "#27ae60"),
+        "fc-purple": ("rgba(93,173,226,0.2)",   "#5dade2"),
+    }
+    bg, color = icon_colors.get(fc_color, ("rgba(46,134,193,0.2)", "#4a9fe0"))
+
+    return html.Div([
+        html.Div(
+            html.I(className=icon_class),
+            style={
+                "width": "40px", "height": "40px", "borderRadius": "10px",
+                "background": bg, "color": color,
+                "display": "flex", "alignItems": "center",
+                "justifyContent": "center", "fontSize": "1.1rem", "flexShrink": "0",
+            }
+        ),
+        html.Div([
+            html.Div(value, style={
+                "fontSize": "1.05rem", "fontWeight": "700",
+                "color": "#fff", "lineHeight": "1",
+            }),
+            html.Div(label, style={
+                "fontSize": "0.70rem", "color": "#8a9bbf", "marginTop": "3px",
+            }),
+        ]),
+    ], style={
+        "display": "flex", "alignItems": "center", "gap": "12px",
+        "background": "rgba(255,255,255,0.06)",
+        "backdropFilter": "blur(12px)", "WebkitBackdropFilter": "blur(12px)",
+        "border": "1px solid rgba(255,255,255,0.10)",
+        "borderRadius": "14px", "padding": "13px 16px",
+        "minWidth": "170px",
+        "boxShadow": "0 8px 32px rgba(0,0,0,0.28)",
     })
 
 
-def _btn_inner(icon: str, label: str, sublabel: str):
+def _mini_chart():
     return html.Div([
-        _icon(icon),
-        html.Div(label, style={
-            "fontWeight": "600",
-            "fontSize": "0.80rem",
-            "color": "#1a2540",
-            "marginBottom": "2px",
+        html.Div("Distribución de clases", style={
+            "fontSize": "0.68rem", "color": "#8a9bbf",
+            "fontWeight": "600", "marginBottom": "10px",
+            "textTransform": "uppercase", "letterSpacing": "0.5px",
         }),
-        html.Div(sublabel, style={
-            "fontSize": "0.68rem",
-            "color": "#718096",
-            "whiteSpace": "nowrap",
-        }),
-    ], style={"textAlign": "center"})
+        html.Div([
+            html.Div([
+                html.Div(style={
+                    "width": "28px", "height": "52px", "borderRadius": "4px 4px 0 0",
+                    "background": "linear-gradient(180deg,#4a9fe0,#2e6fa5)",
+                }),
+                html.Div("99.8%", style={"fontSize": "0.64rem", "fontWeight": "700",
+                                         "color": "#c8d4e8", "marginTop": "4px"}),
+                html.Div("Legítimas", style={"fontSize": "0.58rem", "color": "#5a7abf"}),
+            ], style={"display": "flex", "flexDirection": "column",
+                      "alignItems": "center", "gap": "3px"}),
+            html.Div([
+                html.Div(style={
+                    "width": "28px", "height": "6px", "borderRadius": "4px 4px 0 0",
+                    "background": "linear-gradient(180deg,#e74c3c,#c0392b)",
+                }),
+                html.Div("0.17%", style={"fontSize": "0.64rem", "fontWeight": "700",
+                                         "color": "#c8d4e8", "marginTop": "4px"}),
+                html.Div("Fraudes", style={"fontSize": "0.58rem", "color": "#5a7abf"}),
+            ], style={"display": "flex", "flexDirection": "column",
+                      "alignItems": "center", "gap": "3px"}),
+        ], style={"display": "flex", "alignItems": "flex-end",
+                  "gap": "14px", "height": "80px"}),
+    ], style={
+        "background": "rgba(255,255,255,0.06)",
+        "backdropFilter": "blur(12px)", "WebkitBackdropFilter": "blur(12px)",
+        "border": "1px solid rgba(255,255,255,0.10)",
+        "borderRadius": "14px", "padding": "14px 18px",
+        "boxShadow": "0 8px 32px rgba(0,0,0,0.28)",
+    })
 
 
-def _action_btn_link(icon, label, sublabel, href):
-    return html.A(
-        href=href,
-        target="_blank",
-        children=_btn_inner(icon, label, sublabel),
-        style=_btn_style(),
-        className="action-btn", 
-    )
-
-
-def _action_btn_internal(icon, label, sublabel, btn_id):
+def _orbital_ring():
     return html.Div(
-        id=btn_id,
-        n_clicks=0,
-        children=_btn_inner(icon, label, sublabel),
-        style=_btn_style(),
-        className="action-btn", 
+        html.Div(style={
+            "position": "absolute",
+            "top": "50%", "left": "50%",
+            "transform": "translate(-50%, -52%) rotate(-10deg)",
+            "width": "80%", "height": "72%",
+            "borderRadius": "50%",
+            "border": "1px dashed rgba(74,111,165,0.20)",
+            "pointerEvents": "none",
+        }),
+        style={
+            "position": "absolute", "inset": "0",
+            "pointerEvents": "none", "zIndex": "0",
+        },
     )
+
+
+def _card_wrapper(child, pos, anim_class):
+    style = {"position": "absolute", "zIndex": "2"}
+    style.update(pos)
+    return html.Div(child, className=anim_class, style=style)
+
 
 
 def layout_home():
     return html.Div([
 
-        dbc.Row([
-            dbc.Col(
-                html.Div(
-                    html.Img(
-                        src="/assets/imagen_home.jpeg",
-                        style={
-                            "width": "100%",
-                            "height": "420px",
-                            "objectFit": "cover",
-                            "borderRadius": "16px",
-                            "boxShadow": "0 8px 32px rgba(26,37,64,0.22)",
-                            "display": "block",
-                        },
-                    ),
-                    style={"padding": "8px 0"},
+        html.Div([
+
+            html.Div(style={
+                "position": "absolute", "inset": "0",
+                "pointerEvents": "none", "zIndex": "0",
+                "backgroundImage": (
+                    "radial-gradient(circle at 78% 17%, rgba(74,111,165,0.18) 0%, transparent 40%),"
+                    "radial-gradient(circle at 93% 71%, rgba(46,134,193,0.10) 0%, transparent 35%),"
+                    "radial-gradient(circle at 14% 85%, rgba(30,52,96,0.35) 0%, transparent 40%),"
+                    "radial-gradient(circle at 4%  14%, rgba(74,111,165,0.09) 0%, transparent 30%)"
                 ),
-                md=5,
-            ),
+            }),
 
-            dbc.Col(
+            html.Div([
+
                 html.Div([
+                    html.I(className="bi bi-shield-lock-fill",
+                           style={"marginRight": "7px"}),
+                    "Análisis de Fraude · ULB Dataset",
+                ], style={
+                    "display": "inline-flex", "alignItems": "center",
+                    "background": "rgba(74,111,165,0.2)",
+                    "border": "1px solid rgba(74,111,165,0.4)",
+                    "color": "#7fb3d3", "fontSize": "0.75rem",
+                    "fontWeight": "600", "letterSpacing": "1px",
+                    "textTransform": "uppercase",
+                    "padding": "5px 14px", "borderRadius": "20px",
+                    "marginBottom": "28px",
+                }),
 
-                    html.Div("DETECCIÓN DE FRAUDE FINANCIERO", style={
-                        "fontSize": "1.45rem",
-                        "fontWeight": "800",
-                        "color": "#1a2540",
-                        "lineHeight": "1.2",
-                        "letterSpacing": "0.3px",
-                        "marginBottom": "6px",
+                html.H1([
+                    "Detección de", html.Br(),
+                    html.Span("Fraude", style={
+                        "color": "#4a9fe0",
+                        "borderBottom": "3px solid rgba(74,159,224,0.4)",
+                        "paddingBottom": "2px",
                     }),
+                    " con", html.Br(),
+                    "Tarjeta de Crédito",
+                ], style={
+                    "fontSize": "clamp(2.2rem, 4vw, 3.2rem)",
+                    "fontWeight": "800", "color": "#ffffff",
+                    "lineHeight": "1.12", "margin": "0 0 20px 0",
+                    "letterSpacing": "-0.5px",
+                }),
 
-                    html.Div(style={
-                        "width": "48px", "height": "3px",
-                        "background": "linear-gradient(90deg, #2e86c1, #5dade2)",
-                        "borderRadius": "2px", "marginBottom": "20px",
-                    }),
+                html.P(
+                    "284K transacciones reales · EDA completo · Regresión Logística",
+                    style={
+                        "fontSize": "0.95rem", "color": "#8a9bbf",
+                        "margin": "0 0 36px 0", "lineHeight": "1.6",
+                        "letterSpacing": "0.2px",
+                    }
+                ),
 
-                    html.P(
-                        "El fraude con tarjetas de crédito es una gran amenaza para el sistema financiero en todo el mundo. Entonces, es importante detectarlo a tiempo para proteger a los clientes y evitar pérdidas que pueden llegar a ser millonarias.",
-                        className="section-body", style={"marginBottom": "14px"},
-                    ),
-
-                    html.P(
-                        "En este proyecto se usa el dataset Credit Card Fraud Detection del ULB Machine Learning Group. Dicho dataset tiene 283.726 transacciones de titulares europeos que se exploraron por medio de un análisis exploratorio de datos, en el que se identificaron patrones y variables que separan transacciones fraudulentas de no fraudulentas.",
-                        className="section-body", style={"marginBottom": "14px"},
-                    ),
-
-                    html.P(
-                        "El análisis incluye pruebas no paramétricas, tamaño de efecto, correlaciones, VIF y, próximamente, un modelo de regresión logística para predicción interactiva.",
-                        className="section-body", style={"marginBottom": "32px"},
-                    ),
-
+                html.Div([
+                    _primary_btn("bi bi-grid-fill", "Ver Dashboard", "home-btn-dashboard-real"),
                     html.Div([
-                        _action_btn_internal("bi bi-grid",   "Aplicación", "Ver dashboard",     "home-btn-dashboard-real"),
-                        _action_btn_link("bi bi-github",     "Código",     "Ver en GitHub",     "https://github.com/alemengo76/FraudDetection"),
-                        _action_btn_link("bi bi-database",   "Dataset",    "Ver en Kaggle",     "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"),
-                        _action_btn_internal("bi bi-people", "Equipo",     "Conocer el equipo", "home-btn-about-real"),
-                    ], style={
-                        "display": "flex",
-                        "gap": "10px",
-                        "width": "100%",
-                    }),
+                        _pill_btn_link("bi bi-github",   "GitHub",
+                                       "https://github.com/alemengo76/FraudDetection"),
+                        _pill_btn_link("bi bi-database", "Kaggle",
+                                       "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"),
+                        _pill_btn_internal("bi bi-people-fill", "Equipo", "home-btn-about-real"),
+                    ], style={"display": "flex", "gap": "10px", "flexWrap": "wrap"}),
+                ], style={"display": "flex", "gap": "14px", "flexWrap": "wrap",
+                          "alignItems": "center"}),
 
-                ], style={"padding": "16px 8px"}),
-                md=7,
-            ),
-        ], align="center"),
+            ], className="home-hero-left", style={
+                "position": "relative", "zIndex": "1",
+                "flex": "1", "maxWidth": "520px",
+            }),
 
-    ], className="tab-content-wrapper")
+            html.Div([
+
+                _orbital_ring(),
+
+                _card_wrapper(
+                    _float_card("bi bi-arrow-left-right", "fc-blue",
+                                "283.726", "Transacciones totales"),
+                    {"top": "3%", "left": "50%", "transform": "translateX(-50%)"},
+                    "fc1",
+                ),
+                _card_wrapper(
+                    _float_card("bi bi-exclamation-triangle-fill", "fc-red",
+                                "473", "Fraudes detectados"),
+                    {"top": "22%", "right": "3%"},
+                    "fc2",
+                ),
+                _card_wrapper(
+                    _mini_chart(),
+                    {"bottom": "22%", "right": "3%"},
+                    "fc3",
+                ),
+                _card_wrapper(
+                    _float_card("bi bi-cpu-fill", "fc-purple",
+                                "V14", "Mayor discriminante"),
+                    {"bottom": "3%", "left": "50%", "transform": "translateX(-50%)"},
+                    "fc4",
+                ),
+                _card_wrapper(
+                    _float_card("bi bi-diagram-3-fill", "fc-green",
+                                "28 PCA", "Variables anónimas"),
+                    {"bottom": "22%", "left": "3%"},
+                    "fc5",
+                ),
+                _card_wrapper(
+                    _float_card("bi bi-percent", "fc-amber",
+                                "0.17%", "Tasa de fraude"),
+                    {"top": "22%", "left": "3%"},
+                    "fc1",
+                ),
+
+            ], className="home-hero-right", style={
+                "position": "relative", "zIndex": "1", "flex": "1",
+                "height": "calc(100vh - 100px)",
+                "minHeight": "500px", "minWidth": "420px",
+            }),
+
+        ], style={
+            "position": "relative", "display": "flex", "alignItems": "center",
+            "height": "calc(100vh - 100px)",
+            "background": "linear-gradient(135deg, #080e1c 0%, #0f1e3d 40%, #0d2a4a 70%, #102238 100%)",
+            "overflow": "hidden", "padding": "0 64px", "gap": "40px",
+        }),
+
+    ])
+
+
 
 
 @callback(
@@ -157,174 +316,174 @@ def relay_home_buttons(nd, na):
     return no_update, no_update
 
 
+
+
+def _member_card_dark(name, role, programs, university, github, linkedin):
+    """Tarjeta dark glassmorphism con animaciones de entrada y hover en pills."""
+
+    accent_bar = html.Div(style={
+        "width": "4px", "flexShrink": "0",
+        "background": "linear-gradient(180deg, #4a9fe0, #4a6fa5)",
+        "borderRadius": "16px 0 0 16px",
+    })
+
+    avatar = html.Div(
+        html.I(className="bi bi-person-circle",
+               style={"fontSize": "2.6rem", "color": "#4a9fe0", "opacity": "0.85"}),
+        style={"marginBottom": "14px"},
+    )
+
+    nombre = html.Div(name, style={
+        "fontSize": "1rem", "fontWeight": "700",
+        "color": "#ffffff", "margin": "0 0 5px 0",
+    })
+
+    badge = html.Span(role, style={
+        "fontSize": "0.65rem", "fontWeight": "600",
+        "color": "#5a7abf", "letterSpacing": "1px",
+        "textTransform": "uppercase", "display": "block",
+        "marginBottom": "18px",
+    })
+
+    def _info(label, value):
+        return html.Div([
+            html.P(label, style={
+                "fontSize": "0.65rem", "fontWeight": "700", "color": "#5a7abf",
+                "letterSpacing": "1px", "textTransform": "uppercase", "margin": "0",
+            }),
+            html.P(value, style={
+                "fontSize": "0.85rem", "color": "#c8d4e8", "margin": "3px 0 10px 0",
+            }),
+        ])
+
+    info_section = html.Div([
+        _info("Programa", " · ".join(programs)),
+        _info("Institución", university),
+    ], style={"marginBottom": "18px"})
+
+    # Pills con clase CSS para hover animado
+    link_pills = []
+    if github:
+        link_pills.append(html.A(
+            [html.I(className="bi bi-github", style={"marginRight": "6px"}), "GitHub"],
+            href=github, target="_blank",
+            className="equipo-pill",
+        ))
+    if linkedin:
+        link_pills.append(html.A(
+            [html.I(className="bi bi-linkedin", style={"marginRight": "6px"}), "LinkedIn"],
+            href=linkedin, target="_blank",
+            className="equipo-pill",
+        ))
+
+    links_row = html.Div(link_pills, style={
+        "display": "flex", "gap": "10px", "flexWrap": "wrap",
+        "paddingTop": "16px",
+        "borderTop": "1px solid rgba(255,255,255,0.08)",
+    })
+
+    body = html.Div([
+        avatar, nombre, badge, info_section, links_row,
+    ], style={"padding": "28px 24px", "flex": "1"})
+
+    # La clase equipo-card-new tiene el hover definido en CSS
+    return html.Div([accent_bar, body], className="equipo-card-new")
+
+
 def layout_about():
     return html.Div([
 
-        html.H5("Equipo", className="section-title",
-                style={"marginTop": 0, "marginBottom": "40px"}),
+        # Fondo radial decorativo
+        html.Div(style={
+            "position": "absolute", "inset": "0",
+            "pointerEvents": "none", "zIndex": "0",
+            "backgroundImage": (
+                "radial-gradient(circle at 20% 30%, rgba(74,111,165,0.18) 0%, transparent 45%),"
+                "radial-gradient(circle at 80% 70%, rgba(46,134,193,0.12) 0%, transparent 40%),"
+                "radial-gradient(circle at 50% 10%, rgba(30,52,96,0.25) 0%, transparent 35%)"
+            ),
+        }),
 
         html.Div([
-            _member_card(
-                name="Alejandra Meneses Gómez",
-                role="Estudiante",
-                programs=["Ciencia de Datos", "Matemáticas"],
-                university="Universidad del Norte",
-                github="https://github.com/alemengo76",
-                linkedin="https://www.linkedin.com/in/alejandra-meneses-gómez-aaa97b3b7/",
-            ),
-            _member_card(
-                name="Mariangel Yepes Negrete",
-                role="Estudiante",
-                programs=["Ciencia de Datos"],
-                university="Universidad del Norte",
-                github="https://github.com/Mary-Yepes",
-                linkedin=None,
-            ),
-        ], style={
-            "display": "flex",
-            "gap": "32px",
-            "justifyContent": "center",
-            "flexWrap": "wrap",
-        }),
 
-    ], className="tab-content-wrapper")
+            # Eyebrow + título con animación fadeIn
+            html.Div([
+                html.Div([
+                    html.I(className="bi bi-people-fill", style={"marginRight": "7px"}),
+                    "Nuestro Equipo",
+                ], style={
+                    "display": "inline-flex", "alignItems": "center",
+                    "background": "rgba(74,111,165,0.2)",
+                    "border": "1px solid rgba(74,111,165,0.4)",
+                    "color": "#7fb3d3", "fontSize": "0.75rem",
+                    "fontWeight": "600", "letterSpacing": "1px",
+                    "textTransform": "uppercase",
+                    "padding": "5px 14px", "borderRadius": "20px",
+                    "marginBottom": "18px",
+                }),
 
+                html.H2([
+                    "Detrás del ",
+                    html.Span("Proyecto", style={
+                        "color": "#4a9fe0",
+                        "borderBottom": "3px solid rgba(74,159,224,0.4)",
+                        "paddingBottom": "2px",
+                    }),
+                ], style={
+                    "fontSize": "clamp(1.8rem, 3vw, 2.6rem)",
+                    "fontWeight": "800", "color": "#ffffff",
+                    "lineHeight": "1.15", "margin": "0 0 10px 0",
+                    "letterSpacing": "-0.3px",
+                }),
 
-def _member_card(name, role, programs, university, github, linkedin):
+                html.P(
+                    "Universidad del Norte · Ciencia de Datos · 2026",
+                    style={
+                        "fontSize": "0.88rem", "color": "#8a9bbf",
+                        "margin": "0", "letterSpacing": "0.3px",
+                    }
+                ),
 
-    # Acento lateral izquierdo (igual que .section-title del dashboard)
-    # Encabezado con nombre y rol
-    header = html.Div([
-        html.Div(name, style={
-            "fontWeight": "800",
-            "fontSize": "1.05rem",
-            "color": "#1a2540",
-            "letterSpacing": "0.1px",
-            "marginBottom": "4px",
-        }),
-        html.Div(role, style={
-            "fontWeight": "500",
-            "fontSize": "0.82rem",
-            "color": "#2e86c1",
-            "textTransform": "uppercase",
-            "letterSpacing": "0.8px",
-        }),
-    ], style={
-        "borderLeft": "4px solid #2e86c1",
-        "paddingLeft": "14px",
-        "marginBottom": "20px",
-        "textAlign": "left",
+            # Clase CSS con animación slideInLeft
+            ], className="equipo-header-anim", style={"textAlign": "center", "marginBottom": "48px"}),
+
+            # Cards con animación slideInUp escalonada
+            html.Div([
+                html.Div(
+                    _member_card_dark(
+                        name="Alejandra Meneses Gómez",
+                        role="Estudiante",
+                        programs=["Ciencia de Datos", "Matemáticas"],
+                        university="Universidad del Norte",
+                        github="https://github.com/alemengo76",
+                        linkedin="https://www.linkedin.com/in/alejandra-meneses-gómez-aaa97b3b7/",
+                    ),
+                    className="equipo-card-anim-1",  # delay 0.1s
+                ),
+                html.Div(
+                    _member_card_dark(
+                        name="Mariangel Yepes Negrete",
+                        role="Estudiante",
+                        programs=["Ciencia de Datos"],
+                        university="Universidad del Norte",
+                        github="https://github.com/Mary-Yepes",
+                        linkedin=None,
+                    ),
+                    className="equipo-card-anim-2",  # delay 0.25s
+                ),
+            ], style={
+                "display": "flex", "gap": "28px",
+                "justifyContent": "center", "flexWrap": "wrap",
+            }),
+
+        ], style={"position": "relative", "zIndex": "1", "width": "100%"}),
+
+    ],  className="tab-fade-in",
+        style={
+        "position": "relative",
+        "minHeight": "calc(100vh - 100px)",
+        "background": "linear-gradient(135deg, #080e1c 0%, #0f1e3d 40%, #0d2a4a 70%, #102238 100%)",
+        "display": "flex", "flexDirection": "column",
+        "alignItems": "center", "justifyContent": "center",
+        "padding": "48px 64px", "overflow": "hidden",
     })
-
-    # Fila: programas académicos
-    programs_row = html.Div([
-        html.Div("Programa", style={
-            "fontSize": "0.70rem",
-            "fontWeight": "700",
-            "color": "#a0aec0",
-            "textTransform": "uppercase",
-            "letterSpacing": "0.6px",
-            "marginBottom": "6px",
-        }),
-        html.Div(
-            " · ".join(programs),
-            style={
-                "fontSize": "0.85rem",
-                "color": "#2d3748",
-                "fontWeight": "500",
-            }
-        ),
-    ], style={"marginBottom": "14px", "textAlign": "left"})
-
-    # universidad
-    university_row = html.Div([
-        html.Div("Institución", style={
-            "fontSize": "0.70rem",
-            "fontWeight": "700",
-            "color": "#a0aec0",
-            "textTransform": "uppercase",
-            "letterSpacing": "0.6px",
-            "marginBottom": "6px",
-        }),
-        html.Div([
-            university,
-        ], style={
-            "fontSize": "0.85rem",
-            "color": "#2d3748",
-            "fontWeight": "500",
-            "display": "flex",
-            "alignItems": "center",
-        }),
-    ], style={"marginBottom": "24px", "textAlign": "left"})
-
-    # Separador
-    divider = html.Hr(style={
-        "border": "none",
-        "borderTop": "1px solid #e2e8f0",
-        "margin": "0 0 18px 0",
-    })
-
-    # Links
-    link_items = []
-    if github:
-        link_items.append(html.A(
-            [html.I(className="bi bi-github", style={"marginRight": "6px"}), "GitHub"],
-            href=github,
-            target="_blank",
-            className="action-btn",
-            style={
-                "display": "inline-flex",
-                "alignItems": "center",
-                "padding": "6px 18px",
-                "borderRadius": "6px",
-                "border": "1px solid #cbd5e0",
-                "fontSize": "0.76rem",
-                "fontWeight": "600",
-                "color": "#1a2540",
-                "textDecoration": "none",
-                "background": "#f8fafc",
-            },
-        ))
-    if linkedin:
-        link_items.append(html.A(
-            [html.I(className="bi bi-linkedin",
-                    style={"marginRight": "6px", "color": "#0a66c2"}), "LinkedIn"],
-            href=linkedin,
-            target="_blank",
-            className="action-btn",
-            style={
-                "display": "inline-flex",
-                "alignItems": "center",
-                "padding": "6px 18px",
-                "borderRadius": "6px",
-                "border": "1px solid #cbd5e0",
-                "fontSize": "0.76rem",
-                "fontWeight": "600",
-                "color": "#1a2540",
-                "textDecoration": "none",
-                "background": "#f8fafc",
-            },
-        ))
-
-    links = html.Div(link_items, style={
-        "display": "flex",
-        "gap": "8px",
-        "justifyContent": "flex-start",
-    })
-
-    return html.Div([
-        header,
-        programs_row,
-        university_row,
-        divider,
-        links,
-    ], style={
-        "padding": "28px",
-        "background": "#ffffff",
-        "borderRadius": "12px",
-        "boxShadow": "0 4px 16px rgba(26,37,64,0.09)",
-        "borderTop": "3px solid #2e86c1",
-        "width": "320px",
-        "flexShrink": "0",
-    })
-    

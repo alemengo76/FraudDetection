@@ -252,12 +252,12 @@ def layout():
                                 ],
                             )
                         ),
-                    ]),
+                    ], className="hallazgo-card"),
                     width=12,
                 )
             ),
         ],
-        className="tab-content-wrapper",
+        className="tab-content-wrapper tab-fade-in",
     )
 
 

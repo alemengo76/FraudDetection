@@ -7,6 +7,7 @@ Punto de entrada del dashboard de detección de fraude financiero.
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output
+import time
 
 from tabs import (
     introduccion, contexto, problema, objetivos,
@@ -135,10 +136,9 @@ def render_section(h, d, a, hb, ha):
         return render_dashboard_tab("introduccion"), subtabs_visible, base, active, base, "dashboard"
 
     if triggered in ["nav-about", "home-btn-about"]:
-        return home.layout_about(), subtabs_hidden, base, base, active, "about"
+        return html.Div(home.layout_about(), key=f"about-{time.time()}"), subtabs_hidden, base, base, active, "about"
 
-    # nav-home o cualquier otro trigger
-    return home.layout_home(), subtabs_hidden, active, base, base, "home"
+    return html.Div(home.layout_home(), key=f"home-{time.time()}"), subtabs_hidden, active, base, base, "home"
 
 
 @app.callback(
@@ -170,7 +170,10 @@ def render_dashboard_tab(tab: str):
         "conclusiones": conclusiones.layout,
     }
     fn = routing.get(tab)
-    return fn() if fn else html.Div("Pestaña no encontrada.", style={"padding": "40px"})
+    content = fn() if fn else html.Div("Pestaña no encontrada.", style={"padding": "40px"})
+    
+    # Envolver en un div con key único fuerza a React a recrear el nodo
+    return html.Div(content, key=f"{tab}-{time.time()}")
 
 
 if __name__ == "__main__":

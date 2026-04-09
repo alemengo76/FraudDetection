@@ -48,17 +48,14 @@ def _lim_card(title: str, body: str, accent: str) -> dbc.Col:
     return dbc.Col(
         dbc.Card([
             html.Div(
-                html.Span(title),
-                style={
-                    "background": accent, "color": "#fff",
-                    "padding": "11px 16px", "borderRadius": "8px 8px 0 0",
-                    "fontWeight": "700", "fontSize": "0.86rem",
-                },
+                title,
+                className="card-header-custom",
+                style={"borderTop": f"3px solid {accent}"},
             ),
             dbc.CardBody(
                 html.P(body, className="section-body", style={"marginBottom": 0})
             ),
-        ]),
+        ], className="hallazgo-card"),
         md=4,
         className="mb-3"
     )
@@ -87,5 +84,5 @@ def layout():
             for i, (title, body) in enumerate(LIMITACIONES[3:], start=3)
         ]),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
 

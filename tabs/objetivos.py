@@ -33,7 +33,7 @@ def layout():
                             style={"marginBottom": 0},
                         )
                     ),
-                ]),
+                ], className="hallazgo-card"),
                 width=12
             ),
             className="mb-4"
@@ -69,7 +69,7 @@ def layout():
                       "Crear un formulario que le permita al usuario ingresar características de una transacción y poder predecir si es fraudulenta."),
         ]),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
 
 
 def _obj_card(num: str, title: str, body: str):
@@ -89,6 +89,6 @@ def _obj_card(num: str, title: str, body: str):
             dbc.CardBody(
                 html.P(body, className="section-body", style={"marginBottom": 0})
             ),
-        ]),
+        ], className="hallazgo-card"),
         md=3, className="mb-3"
     )

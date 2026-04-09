@@ -2,7 +2,7 @@
 tabs/eda.py
 -----------
 Pestaña – Análisis Exploratorio de Datos.
-Univariado, Bivariado y RBC.
+Univariado, Bivariado, Análisis Temporal y Estructura de Variables.
 """
 
 import numpy as np
@@ -132,72 +132,17 @@ BAJO = {"V13", "V15", "V22", "V23", "V24", "V25", "V26", "V28", "Amount", "Time"
 
 # Listas de variables por sección
 VARS_NUM_UNI = [
-    "V1",
-    "V2",
-    "V3",
-    "V4",
-    "V5",
-    "V6",
-    "V7",
-    "V8",
-    "V9",
-    "V10",
-    "V11",
-    "V12",
-    "V13",
-    "V14",
-    "V15",
-    "V16",
-    "V17",
-    "V18",
-    "V19",
-    "V20",
-    "V21",
-    "V22",
-    "V23",
-    "V24",
-    "V25",
-    "V26",
-    "V27",
-    "V28",
-    "Amount",
-    "log_Amount",
-    "Time",
-    "Class",
+    "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10",
+    "V11", "V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19", "V20",
+    "V21", "V22", "V23", "V24", "V25", "V26", "V27", "V28",
+    "Amount", "log_Amount", "Time", "Class",
 ]
 
 VARS_NUM_BIV = [
-    "V1",
-    "V2",
-    "V3",
-    "V4",
-    "V5",
-    "V6",
-    "V7",
-    "V8",
-    "V9",
-    "V10",
-    "V11",
-    "V12",
-    "V13",
-    "V14",
-    "V15",
-    "V16",
-    "V17",
-    "V18",
-    "V19",
-    "V20",
-    "V21",
-    "V22",
-    "V23",
-    "V24",
-    "V25",
-    "V26",
-    "V27",
-    "V28",
-    "Amount",
-    "log_Amount",
-    "Time",
+    "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10",
+    "V11", "V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19", "V20",
+    "V21", "V22", "V23", "V24", "V25", "V26", "V27", "V28",
+    "Amount", "log_Amount", "Time",
 ]
 
 # VIF pre-calculados
@@ -321,6 +266,7 @@ def _build_fig_vif():
     )
     return fig
 
+
 def _build_fig_temporal():
     df2 = _DF.copy()
     df2["Hour"] = (df2["Time"] // 3600) % 24
@@ -338,10 +284,12 @@ def _build_fig_temporal():
     fig.update_layout(height=420, **LAYOUT_BASE)
     return fig
 
+
 # Pre-calcular matrices de correlación
 _num_cols = [c for c in _DF.columns if c not in ("Class", "log_Amount")]
 _CORR_0 = _DF[_DF["Class"] == "0"][_num_cols].corr(method="spearman")
 _CORR_1 = _DF[_DF["Class"] == "1"][_num_cols].corr(method="spearman")
+
 
 def _build_fig_correlacion_clase(corr: pd.DataFrame, titulo: str):
     fig = go.Figure(go.Heatmap(
@@ -356,6 +304,7 @@ def _build_fig_correlacion_clase(corr: pd.DataFrame, titulo: str):
         **LAYOUT_BASE,
     )
     return fig
+
 
 _FIG_CORRELACION_0 = _build_fig_correlacion_clase(_CORR_0, "Transacciones NO fraudulentas")
 _FIG_CORRELACION_1 = _build_fig_correlacion_clase(_CORR_1, "Transacciones fraudulentas")
@@ -491,7 +440,8 @@ _fig_kde_biv_time()
 _fig_kde_uni("Time")
 _fig_bar_class()
 
-# Funcionesss
+
+# Funciones auxiliares
 def _grupo_badge(var: str):
     if var in ALTO:
         label, color = "Alto poder discriminante", "#27ae60"
@@ -623,314 +573,319 @@ def _kpis_biv(var: str):
     )
 
 
-# Layout
+
+
+def _panel_univariado():
+    """Contenido del tab Análisis Univariado."""
+    return html.Div([
+        dbc.Row([
+            dbc.Col([
+                html.Label(
+                    "Selecciona una variable:",
+                    style={"fontSize": "0.85rem", "fontWeight": "600", "color": "#1a2540"},
+                ),
+                dcc.Dropdown(
+                    id="uni-var-selector",
+                    options=[{"label": v, "value": v} for v in VARS_NUM_UNI],
+                    value="V1",
+                    clearable=False,
+                    style={"fontSize": "0.85rem"},
+                ),
+            ], md=4),
+        ], className="mb-3"),
+
+        dbc.Row([
+            dbc.Col(
+                html.Div([
+                    html.Div("", className="kpi-value", id="uni-kpi-skew"),
+                    html.Div("", className="kpi-label", id="uni-kpi-skew-label"),
+                ], className="kpi-card"),
+                className="mb-2",
+            ),
+            dbc.Col(
+                html.Div([
+                    html.Div("", className="kpi-value", id="uni-kpi-kurt"),
+                    html.Div("", className="kpi-label", id="uni-kpi-kurt-label"),
+                ], className="kpi-card"),
+                className="mb-2",
+            ),
+        ], className="mb-3"),
+
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div(id="uni-graph-title", className="card-header-custom"),
+                    dbc.CardBody(dcc.Graph(id="uni-graph", config={"displayModeBar": False})),
+                ]),
+                width=12,
+            ),
+            className="mb-4",
+        ),
+
+        html.Div(id="uni-interpretacion", className="mb-2"),
+    ])
+
+
+def _panel_bivariado():
+    """Contenido del tab Análisis Bivariado."""
+    return html.Div([
+        dbc.Row([
+            dbc.Col([
+                html.Label(
+                    "Selecciona una variable:",
+                    style={"fontSize": "0.85rem", "fontWeight": "600", "color": "#1a2540"},
+                ),
+                dcc.Dropdown(
+                    id="biv-var-selector",
+                    options=[{"label": v, "value": v} for v in VARS_NUM_BIV],
+                    value="V1",
+                    clearable=False,
+                    style={"fontSize": "0.85rem"},
+                ),
+            ], md=4),
+        ], className="mb-3"),
+
+        html.Div(id="biv-kpis", className="mb-3"),
+
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div(id="biv-graph-title", className="card-header-custom"),
+                    dbc.CardBody(dcc.Graph(id="biv-graph", config={"displayModeBar": False})),
+                ]),
+                width=12,
+            ),
+            className="mb-4",
+        ),
+
+        html.Div(id="biv-interpretacion", className="mb-2"),
+    ])
+
+
+def _panel_temporal():
+    """Contenido del tab Análisis Temporal."""
+    return html.Div([
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div("Análisis temporal de las transacciones", className="card-header-custom"),
+                    dbc.CardBody([
+                        html.P(
+                            "El análisis exploratorio previo permite plantear una pregunta adicional: "
+                            "¿tienden a concentrarse montos más elevados en ciertos intervalos de tiempo "
+                            "o el comportamiento del monto es independiente del tiempo en estos dos días? "
+                            "Para este análisis se usa la mediana de Amount debido al gran sesgo de esta variable.",
+                            className="section-body",
+                        ),
+                        dcc.Graph(figure=_FIG_TEMPORAL, config={"displayModeBar": False}),
+                        html.P(
+                            "Note que Time representa los segundos transcurridos desde la primera transacción, luego, "
+                            "las horas son relativas al inicio del registro y no corresponden necesariamente a horas "
+                            "del día reales. Con esto en mente, a simple vista parece que en las horas relativas 0, 6 "
+                            "y 14 las medianas de los montos de las transacciones fraudulentas son muy elevadas, y "
+                            "presentan una alta variabilidad, con picos pronunciados, lo que implica que estos no "
+                            "siguen un patrón uniforme y pueden concentrarse en intervalos específicos con valores "
+                            "elevados. En contraste, el monto en las transacciones no fraudulentas presenta un "
+                            "comportamiento relativamente estable a lo largo del tiempo. No obstante, en el futuro "
+                            "se realizarán pruebas estadísticas para verificar si las diferencias son a causa de un "
+                            "patrón significativo o se atribuyen a la variabilidad aleatoria derivada del tamaño "
+                            "muestral reducido en la clase minoritaria.",
+                            className="section-body",
+                        ),
+                    ]),
+                ]),
+                width=12,
+            ),
+            className="mb-4",
+        ),
+    ])
+
+
+def _panel_estructura():
+    """Contenido del tab Estructura de Variables (correlación + VIF + RBC)."""
+    return html.Div([
+        # Correlación
+        html.H6(
+            "Correlación",
+            style={
+                "fontWeight": "700",
+                "borderLeft": f"4px solid {C_BLUE}",
+                "paddingLeft": "12px",
+                "marginBottom": "12px",
+                "color": "#1a2540",
+            },
+        ),
+
+        dbc.Row([
+            dbc.Col([
+                html.Label(
+                    "Selecciona una vista:",
+                    style={"fontSize": "0.85rem", "fontWeight": "600", "color": "#1a2540"},
+                ),
+                dcc.Dropdown(
+                    id="corr-selector",
+                    options=[
+                        {"label": "General", "value": "general"},
+                        {"label": "Por clase (Fraude vs No fraude)", "value": "clases"},
+                    ],
+                    value="general",
+                    clearable=False,
+                    style={"fontSize": "0.85rem"},
+                ),
+            ], md=4),
+        ], className="mb-3"),
+
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div("Matriz de correlación Spearman", className="card-header-custom"),
+                    dbc.CardBody(html.Div(id="corr-content")),
+                ]),
+                width=12,
+            ),
+            className="mb-3",
+        ),
+
+        html.Div(id="corr-interpretacion", className="mb-4"),
+
+        # VIF
+        html.H6(
+            "Factor de Inflación de la Varianza (VIF)",
+            style={
+                "fontWeight": "700",
+                "borderLeft": f"4px solid {C_BLUE}",
+                "paddingLeft": "12px",
+                "marginBottom": "12px",
+                "color": "#1a2540",
+            },
+        ),
+
+        html.P(
+            "El Factor de Inflación de la Varianza (VIF) mide la multicolinealidad entre las variables "
+            "explicativas. Un VIF ≥ 5 indica multicolinealidad moderada y un VIF ≥ 10 indica multicolinealidad "
+            "severa. En este dataset, solo Amount tiene un VIF mayor a 10 (VIF = 12.30), mientras que "
+            "el resto de variables tienen valores bajos, lo que sugiere que no hay multicolinealidad problemática.",
+            className="section-body",
+        ),
+
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div("VIF por variable", className="card-header-custom"),
+                    dbc.CardBody(dcc.Graph(figure=_FIG_VIF, config={"displayModeBar": False})),
+                ]),
+                width=12,
+            ),
+            className="mb-4",
+        ),
+
+        # RBC
+        html.H6(
+            "Capacidad discriminativa (RBC)",
+            style={
+                "fontWeight": "700",
+                "borderLeft": f"4px solid {C_BLUE}",
+                "paddingLeft": "12px",
+                "marginBottom": "12px",
+                "color": "#1a2540",
+            },
+        ),
+
+        html.P(
+            "El coeficiente RBC (Rank Biserial Correlation) mide qué tan bien separa "
+            "cada variable las transacciones fraudulentas de las no fraudulentas. "
+            "Las líneas verdes marcan el umbral |RBC| > 0.5, que indica alta capacidad discriminativa. "
+            "Las 5 variables con mayor capacidad discriminativa son: V14, V4, V12, V11 y V10",
+            className="section-body",
+        ),
+
+        dbc.Row(
+            dbc.Col(
+                dbc.Card([
+                    html.Div("RBC por variable", className="card-header-custom"),
+                    dbc.CardBody(dcc.Graph(figure=_FIG_RBC, config={"displayModeBar": False})),
+                ]),
+                width=12,
+            ),
+            className="mb-4",
+        ),
+    ])
+
+
+
+
 def layout():
     return html.Div(
         [
-            #Título
+            # Título de la pestaña
             dbc.Row(
                 dbc.Col(
-                    html.Div(
-                        [
-                            html.H5(
-                                "Análisis Exploratorio de Datos",
-                                className="section-title",
-                                style={"marginTop": 0},
-                            ),
-                            html.P(
-                                "Para ver de mejor manera la distribución de Amount, se recomienda seleccionar log_Amount en el análisis bivariado, pues esta tiene una alta asimetría que no permite comparar las clases.",
-                                className="section-body",
-                            ),
-                        ]
-                    ),
-                    width=12,
-                ),
-                className="mb-4",
-            ),
-            # Univariado
-            dbc.Row(
-                dbc.Col(
-                    html.H5("Análisis univariado", className="section-title"), width=12
-                ),
-                className="mb-3",
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            html.Label(
-                                "Selecciona una variable:",
-                                style={
-                                    "fontSize": "0.85rem",
-                                    "fontWeight": "600",
-                                    "color": "#1a2540",
-                                },
-                            ),
-                            dcc.Dropdown(
-                                id="uni-var-selector",
-                                options=[
-                                    {"label": v, "value": v} for v in VARS_NUM_UNI
-                                ],
-                                value="V1",
-                                clearable=False,
-                                style={"fontSize": "0.85rem"},
-                            ),
-                        ],
-                        md=4,
-                    ),
-                ],
-                className="mb-3",
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(
-                            [
-                                html.Div("", className="kpi-value", id="uni-kpi-skew"),
-                                html.Div(
-                                    "", className="kpi-label", id="uni-kpi-skew-label"
-                                ),
-                            ],
-                            className="kpi-card",
+                    html.Div([
+                        html.H5(
+                            "Análisis Exploratorio de Datos",
+                            className="section-title",
+                            style={"marginTop": 0},
                         ),
-                        className="mb-2",
-                    ),
-                    dbc.Col(
-                        html.Div(
-                            [
-                                html.Div("", className="kpi-value", id="uni-kpi-kurt"),
-                                html.Div(
-                                    "", className="kpi-label", id="uni-kpi-kurt-label"
-                                ),
-                            ],
-                            className="kpi-card",
+                        html.P(
+                            "Para ver de mejor manera la distribución de Amount, se recomienda seleccionar "
+                            "log_Amount en el análisis bivariado, pues esta tiene una alta asimetría que no "
+                            "permite comparar las clases.",
+                            className="section-body",
                         ),
-                        className="mb-2",
-                    ),
-                ],
-                className="mb-3",
-            ),
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.Div(
-                                id="uni-graph-title", className="card-header-custom"
-                            ),
-                            dbc.CardBody(
-                                dcc.Graph(
-                                    id="uni-graph", config={"displayModeBar": False}
-                                )
-                            ),
-                        ]
-                    ),
+                    ]),
                     width=12,
                 ),
                 className="mb-4",
             ),
-            html.Div(id="uni-interpretacion", className="mb-4"),
-            
-            #Bivariado
-            dbc.Row(
-                dbc.Col(
-                    html.H5("Análisis bivariado (vs Class)", className="section-title"),
-                    width=12,
-                ),
-                className="mb-3",
-            ),
-            dbc.Row(
+
+            # Navbar con tabs (equivalente al navset_card_tab de Shiny)
+            dbc.Card(
                 [
-                    dbc.Col(
-                        [
-                            html.Label(
-                                "Selecciona una variable:",
-                                style={
-                                    "fontSize": "0.85rem",
-                                    "fontWeight": "600",
-                                    "color": "#1a2540",
-                                },
-                            ),
-                            dcc.Dropdown(
-                                id="biv-var-selector",
-                                options=[
-                                    {"label": v, "value": v} for v in VARS_NUM_BIV
-                                ],
-                                value="V1",
-                                clearable=False,
-                                style={"fontSize": "0.85rem"},
-                            ),
-                        ],
-                        md=4,
+                    dbc.CardHeader(
+                        dbc.Tabs(
+                            [
+                                dbc.Tab(label="Análisis Univariado",   tab_id="tab-uni"),
+                                dbc.Tab(label="Análisis Bivariado",    tab_id="tab-biv"),
+                                dbc.Tab(label="Análisis Temporal",     tab_id="tab-temporal"),
+                                dbc.Tab(label="Diagnóstico multivariado", tab_id="tab-estructura"),
+                            ],
+                            id="eda-tabs",
+                            active_tab="tab-uni",
+                            className="custom-tabs",
+                            style={"borderBottom": "none"},
+                        )
                     ),
+                    dbc.CardBody(html.Div(id="eda-tab-content")),
                 ],
-                className="mb-3",
-            ),
-            html.Div(id="biv-kpis", className="mb-3"),
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.Div(
-                                id="biv-graph-title", className="card-header-custom"
-                            ),
-                            dbc.CardBody(
-                                dcc.Graph(
-                                    id="biv-graph", config={"displayModeBar": False}
-                                )
-                            ),
-                        ]
-                    ),
-                    width=12,
-                ),
                 className="mb-4",
+                # Borde superior de acento en azul, igual que las section-title
+                style={"border": "1px solid #dee2e6", "borderTop": f"3px solid {C_BLUE}"},
             ),
-            html.Div(id="biv-interpretacion", className="mb-4"),
-            # Correlación
-            dbc.Row(dbc.Col(html.H5("Correlación",
-                        className="section-title"), width=12), className="mb-3"),
-dbc.Row([
-    dbc.Col([
-        html.Label("Selecciona una vista:",
-                   style={"fontSize": "0.85rem", "fontWeight": "600", "color": "#1a2540"}),
-        dcc.Dropdown(
-            id="corr-selector",
-            options=[
-                {"label": "General", "value": "general"},
-                {"label": "Por clase (Fraude vs No fraude)", "value": "clases"},
-            ],
-            value="general", clearable=False,
-            style={"fontSize": "0.85rem"},
-        ),
-    ], md=4),
-], className="mb-3"),
-
-dbc.Row(dbc.Col(dbc.Card([
-    html.Div("Matriz de correlación Spearman", className="card-header-custom"),
-    dbc.CardBody(html.Div(id="corr-content")),
-]), width=12), className="mb-4"),
-
-html.Div(id="corr-interpretacion", className="mb-4"),
-            dbc.Row(
-                dbc.Col(
-                    html.H5(
-                        "Factor de Inflación de la Varianza (VIF)", className="section-title"
-                    ),
-                    width=12,
-                ),
-                className="mb-2",
-            ),
-            dbc.Row(
-                dbc.Col(
-                    html.P(
-                        "El Factor de Inflación de la Varianza (VIF) mide la multicolinealidad entre las variables "
-                        "explicativas. Un VIF ≥ 5 indica multicolinealidad moderada y un VIF ≥ 10 indica multicolinealidad "
-                        "severa. En este dataset, solo Amount tiene un VIF mayor a 10 (VIF = 12.30), mientras que "
-                        "el resto de variables tienen valores bajos, lo que sugiere que no hay multicolinealidad problemática.",
-                        className="section-body",
-                    ),
-                    width=12,
-                ),
-                className="mb-3",
-            ),
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.Div(
-                                "VIF por variable",
-                                className="card-header-custom",
-                            ),
-                            dbc.CardBody(
-                                dcc.Graph(
-                                    figure=_FIG_VIF, config={"displayModeBar": False}
-                                )
-                            ),
-                        ]
-                    ),
-                    width=12,
-                ),
-                className="mb-4",
-            ),
-            # RBC
-            dbc.Row(
-                dbc.Col(
-                    html.H5(
-                        "Capacidad discriminativa (RBC)", className="section-title"
-                    ),
-                    width=12,
-                ),
-                className="mb-2",
-            ),
-            dbc.Row(
-                dbc.Col(
-                    html.P(
-                        "El coeficiente RBC (Rank Biserial Correlation) mide qué tan bien separa "
-                        "cada variable las transacciones fraudulentas de las no fraudulentas. "
-                        "Las líneas verdes marcan el umbral |RBC| > 0.5, que indica alta capacidad discriminativa. Las 5 variables con mayor capacidad discriminativa son: V14, V4, V12, V11 y V10",
-                        className="section-body",
-                    ),
-                    width=12,
-                ),
-                className="mb-3",
-            ),
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            html.Div(
-                                "RBC por variable", className="card-header-custom"
-                            ),
-                            dbc.CardBody(
-                                dcc.Graph(
-                                    figure=_FIG_RBC, config={"displayModeBar": False}
-                                )
-                            ),
-                        ]
-                    ),
-                    width=12,
-                ),
-                className="mb-4"
-            ),
-        
-        #Análisis temporal
-dbc.Row(dbc.Col(dbc.Card([
-    html.Div([
-    html.Span("Análisis temporal de las transacciones", style={"flex": "1"}),
-    html.Span("▼", id="temporal-arrow", style={"fontSize": "0.75rem"}),
-], className="card-header-custom", id="temporal-toggle",
-   style={"cursor": "pointer", "display": "flex", "alignItems": "center"}),
-    dbc.Collapse(
-        dbc.CardBody([
-            html.P(
-                "El análisis exploratorio previo permite plantear una pregunta adicional: "
-                "¿tienden a concentrarse montos más elevados en ciertos intervalos de tiempo "
-                "o el comportamiento del monto es independiente del tiempo en estos dos días? "
-                "Para este análisis se usa la mediana de Amount debido al gran sesgo de esta variable.",
-                className="section-body",
-            ),
-            dcc.Graph(figure=_FIG_TEMPORAL, config={"displayModeBar": False}),
-            html.P(
-                "Note que Time representa los segundos transcurridos desde la primera transacción, luego, las horas son relativas al inicio del registro y no corresponden necesariamente a horas del día reales. Con esto en mente, a simple vista parece que en las horas relativas 0, 6 y 14 las medianas de los montos de las transacciones fraudulentas son muy elevadas, y  presentan una alta variabilidad, con picos pronunciados, lo que implica que estos no siguen un patrón uniforme y pueden concentrarse en intervalos específicos con valores elevados. En contraste, el monto en las transacciones no fraudulentas presenta un comportamiento relativamente estable a lo largo del tiempo. No obstante, en el futuro se realizarán pruebas estadísticas para verificar si las diferencias son a causa de un patrón significativo o se atribuyen a la variabilidad aleatoria derivada del tamaño muestral reducido en la clase minoritaria.",
-                className="section-body",
-            ),
-        ]),
-        id="temporal-collapse",
-        is_open=False,
-    ),
-]), width=12), className="mb-4"),
-        
-        
-        
-        
         ],
-        className="tab-content-wrapper",
+        className="tab-content-wrapper tab-fade-in",
     )
 
 
-#Callbacks
-def register_callbacks(app):
-    
 
+def register_callbacks(app):
+
+    # Renderiza el panel activo
+    @app.callback(
+        Output("eda-tab-content", "children"),
+        Input("eda-tabs", "active_tab"),
+    )
+    def render_tab(active_tab):
+        if active_tab == "tab-uni":
+            return _panel_univariado()
+        if active_tab == "tab-biv":
+            return _panel_bivariado()
+        if active_tab == "tab-temporal":
+            return _panel_temporal()
+        if active_tab == "tab-estructura":
+            return _panel_estructura()
+        return html.Div()
+
+    # Univariado
     @app.callback(
         Output("uni-graph", "figure"),
         Output("uni-graph-title", "children"),
@@ -946,21 +901,16 @@ def register_callbacks(app):
             return (
                 _fig_bar_class(),
                 "Class",
-                "99.83%",
-                "No fraude",
-                "0.17%",
-                "Fraude",
+                "99.83%", "No fraude",
+                "0.17%", "Fraude",
                 _interpretacion_uni(var),
             )
         if var == "log_Amount":
-            fig = _fig_boxplot_uni(var)
             return (
-                fig,
+                _fig_boxplot_uni(var),
                 "log_Amount",
-                "",
-                "Asimetría",
-                "",
-                "Curtosis",
+                "", "Asimetría",
+                "", "Curtosis",
                 _interpretacion_uni("log_Amount"),
             )
         fig = _fig_kde_uni(var) if var == "Time" else _fig_boxplot_uni(var)
@@ -968,13 +918,12 @@ def register_callbacks(app):
         return (
             fig,
             var,
-            f"{sk.get('skew', '')}",
-            "Asimetría",
-            f"{sk.get('kurt', '')}",
-            "Curtosis",
+            f"{sk.get('skew', '')}", "Asimetría",
+            f"{sk.get('kurt', '')}", "Curtosis",
             _interpretacion_uni(var),
         )
 
+    # Bivariado
     @app.callback(
         Output("biv-kpis", "children"),
         Output("biv-graph", "figure"),
@@ -990,55 +939,39 @@ def register_callbacks(app):
             f"{var} vs Class",
             _interpretacion_biv(var),
         )
-    
-    @app.callback(
-        Output("temporal-collapse", "is_open"),
-        Output("temporal-arrow", "style"),
-        Input("temporal-toggle", "n_clicks"),
-        State("temporal-collapse", "is_open"),
-        prevent_initial_call=True,
-    )
-    def toggle_temporal(n, is_open):
-        abierto = not is_open
-        arrow_style = {
-            "fontSize": "0.75rem",
-            "transform": "rotate(180deg)" if abierto else "rotate(0deg)",
-            "transition": "transform 0.2s ease",
-        }
-        return abierto, arrow_style
 
-
+    # Correlación
     @app.callback(
-        Output("corr-content",        "children"),
+        Output("corr-content", "children"),
         Output("corr-interpretacion", "children"),
-        Input("corr-selector",        "value"),
+        Input("corr-selector", "value"),
     )
     def update_correlacion(vista):
         if vista == "general":
             content = dcc.Graph(figure=_FIG_CORRELACION, config={"displayModeBar": False})
             interp = html.P(
-            "En este análisis de correlación inicial usando Spearman, muchas de las variables V1-V28 "
-            "muestran correlaciones bajas entre sí y con las variables Amount y Time, es decir no hay "
-            "relaciones monótónicas fuertes. No obstante, hay correlaciones visibles como: V21 y V22 "
-            "tienen una correlación positiva moderada (r = 0.68), mientras que V2 con Amount muestra "
-            "una correlación negativa moderada (r = -0.50). De todas formas, no se observan patrones "
-            "de correlación generalizados marcados. Cabe resaltar que la correlación de Pearson es "
-            "aproximadamente 0 entre las variables V1 hasta V28, debido a la ortogonalidad del proceso "
-            "PCA.",
-            className="section-body",
-        )
+                "En este análisis de correlación inicial usando Spearman, muchas de las variables V1-V28 "
+                "muestran correlaciones bajas entre sí y con las variables Amount y Time, es decir no hay "
+                "relaciones monótónicas fuertes. No obstante, hay correlaciones visibles como: V21 y V22 "
+                "tienen una correlación positiva moderada (r = 0.68), mientras que V2 con Amount muestra "
+                "una correlación negativa moderada (r = -0.50). De todas formas, no se observan patrones "
+                "de correlación generalizados marcados. Cabe resaltar que la correlación de Pearson es "
+                "aproximadamente 0 entre las variables V1 hasta V28, debido a la ortogonalidad del proceso PCA.",
+                className="section-body",
+            )
         else:
             content = dbc.Row([
-            dbc.Col(dcc.Graph(figure=_FIG_CORRELACION_0, config={"displayModeBar": False}), md=6),
-            dbc.Col(dcc.Graph(figure=_FIG_CORRELACION_1, config={"displayModeBar": False}), md=6),
+                dbc.Col(dcc.Graph(figure=_FIG_CORRELACION_0, config={"displayModeBar": False}), md=6),
+                dbc.Col(dcc.Graph(figure=_FIG_CORRELACION_1, config={"displayModeBar": False}), md=6),
             ])
             interp = html.P(
-            "En la vista por clases se observa un contraste claro: en las transacciones no fraudulentas las "
-"correlaciones son en su mayoría cercanas a 0, sin patrones consistentes entre variables, lo cual "
-"es esperable dado que dominan el dataset y determinan el comportamiento global. En cambio, en las "
-"transacciones fraudulentas emergen correlaciones moderadas a fuertes entre las primeras componentes "
-"principales (V1–V18), destacando V18–V17, V17–V16 y V18–V16 (r ≈ 0.94–0.96), pues estas capturan mayor parte de la variabilidad de los datos y permiten evidenciar "
-"patrones internos consistentes en esta clase que no son visibles en el análisis general.",
-            className="section-body",
-        )
+                "En la vista por clases se observa un contraste claro: en las transacciones no fraudulentas las "
+                "correlaciones son en su mayoría cercanas a 0, sin patrones consistentes entre variables, lo cual "
+                "es esperable dado que dominan el dataset y determinan el comportamiento global. En cambio, en las "
+                "transacciones fraudulentas emergen correlaciones moderadas a fuertes entre las primeras componentes "
+                "principales (V1–V18), destacando V18–V17, V17–V16 y V18–V16 (r ≈ 0.94–0.96), pues estas capturan "
+                "mayor parte de la variabilidad de los datos y permiten evidenciar patrones internos consistentes "
+                "en esta clase que no son visibles en el análisis general.",
+                className="section-body",
+            )
         return content, interp

@@ -56,9 +56,9 @@ def layout():
                 _step("Predicción", "Formulario interactivo"),
             ], style={"display": "flex", "alignItems": "center",
                       "flexWrap": "wrap", "gap": "4px"})),
-        ]), width=12)),
+        ], className="hallazgo-card"), width=12)),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
 
 
 #funciones para que se vea bonito
@@ -69,19 +69,20 @@ def _fase(num: str, subtitle: str, title: str, body: str):
         html.Div([
             html.Span(num, style={
                 "fontSize": "1.6rem", "fontWeight": "800",
-                "color": "#2e86c1", "lineHeight": "1",
+                "color": "#fff", "lineHeight": "1",
             }),
             html.Div([
                 html.Div(title, style={"fontWeight": "700", "fontSize": "0.9rem",
-                                       "color": "#1a2540"}),
-                html.Div(subtitle, style={"fontSize": "0.75rem", "color": "#718096"}),
+                                       "color": "#fff"}),
+                html.Div(subtitle, style={"fontSize": "0.75rem", "color": "#c5d8e8"}),
             ], style={"marginLeft": "12px", "flex": "1"}),
             html.Div([
                 html.Span("▼", id=f"{card_id}-arrow",
-                          style={"fontSize": "0.7rem", "color": "#2e86c1"}),
+                          style={"fontSize": "0.7rem", "color": "#fff"}),
             ], style={"display": "flex", "alignItems": "center"}),
-        ], style={"display": "flex", "alignItems": "center",
-                  "padding": "14px 18px", "borderBottom": "1px solid #e2e8f0",
+        ], className="card-header-custom",
+           style={"display": "flex", "alignItems": "center",
+                  "padding": "14px 18px",
                   "cursor": "pointer"},
            id=f"{card_id}-toggle"),
         dbc.Collapse(
@@ -109,10 +110,10 @@ def _make_callback(app, card_id: str):
     def toggle(n, is_open):
         abierto = not is_open
         arrow_style = {
-            "fontSize": "0.7rem", "color": "#2e86c1",
-            "transform": "rotate(180deg)" if abierto else "rotate(0deg)",
-            "transition": "transform 0.2s ease",
-        }
+    "fontSize": "0.7rem", "color": "#fff",  # ← cambia #2e86c1 por #fff
+    "transform": "rotate(180deg)" if abierto else "rotate(0deg)",
+    "transition": "transform 0.2s ease",
+}
         return abierto, arrow_style
 
 

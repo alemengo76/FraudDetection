@@ -40,7 +40,7 @@ body {
 }
 
 .custom-tabs .nav-link {
-    color: #4a5568 !important;
+    color: #1a2540 !important;
     font-size: 0.82rem;
     font-weight: 600;
     padding: 8px 14px;
@@ -55,10 +55,10 @@ body {
 }
 
 .custom-tabs .nav-link.active {
-    background-color: #2e86c1 !important;
+    background-color: #1a2540 !important;
     color: #ffffff !important;
-    border-bottom: none;
-    box-shadow: 0 -2px 8px rgba(46, 134, 193, 0.25);
+    border-bottom: 3px solid #2e86c1 !important;
+    box-shadow: none;
 }
 
 /*Cards*/
@@ -308,4 +308,76 @@ table.dash-table {
     background: #dce8f5 !important;
     border-color: #2e86c1 !important;
     transform: translateY(-2px);
+}
+
+
+.hallazgo-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hallazgo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(26, 37, 64, 0.14) !important;
+}
+
+
+
+@keyframes floatA {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes floatB {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-14px); }
+}
+@keyframes floatC {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes slideInLeft {
+  from { opacity:0; transform:translateX(-32px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity:0; transform:translateX(32px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+.home-hero-left  { animation: slideInLeft  0.7s ease-out both; }
+.home-hero-right { animation: slideInRight 0.7s ease-out both; }
+.fc1 { animation: floatA 4s   ease-in-out infinite; }
+.fc2 { animation: floatB 5s   ease-in-out infinite; }
+.fc3 { animation: floatC 4.5s ease-in-out infinite; }
+.fc4 { animation: floatA 5.5s ease-in-out infinite 0.5s; }
+.fc5 { animation: floatB 4.2s ease-in-out infinite 1s; }
+
+.home-pill-btn:hover {
+  background: rgba(74,111,165,0.35) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+.home-primary-btn:hover {
+  background: #1a6696 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(46,134,193,0.55) !important;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-fade-in {
+  animation: tabFadeIn 0.35s ease-out both;
+}
+
+.custom-tab:hover {
+    background-color: #dce8f5 !important;
+    color: #1a2540 !important;
+    cursor: pointer;
 }

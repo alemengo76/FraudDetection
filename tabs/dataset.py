@@ -12,7 +12,7 @@ import pandas as pd
 from data.data_loader import get_df
 
 
-def layout() -> html.Div:
+def layout():
     df = get_df()
     n_filas = len(df)
     n_cols = len(df.columns)
@@ -165,7 +165,7 @@ dbc.Row(
     style={"fontStyle": "italic", "color": "#64748b", "marginBottom": "16px"},
 ),
         ],
-        className="tab-content-wrapper",
+        className="tab-content-wrapper tab-fade-in",
     )
 
 

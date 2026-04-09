@@ -143,32 +143,30 @@ def layout():
             ),
         ]), width=12), className="mb-3"),
 
-        # Fila 1: barras + box Amount
         dbc.Row([
             dbc.Col(dbc.Card([
                 html.Div("Frecuencia por clase", className="card-header-custom"),
                 dbc.CardBody(dcc.Graph(figure=_figbarrasclase,
                                        config={"displayModeBar": False})),
-            ]), md=6),
+            ], className="hallazgo-card"), md=6),
             dbc.Col(dbc.Card([
                 html.Div("Monto de la transacción por clase", className="card-header-custom"),
                 dbc.CardBody(dcc.Graph(figure=_figamountbox,
                                        config={"displayModeBar": False})),
-            ]), md=6),
+            ], className="hallazgo-card"), md=6),
         ], className="mb-4"),
 
-        # Fila 2: Time + hora
         dbc.Row([
             dbc.Col(dbc.Card([
                 html.Div("Distribución temporal (Time)", className="card-header-custom"),
                 dbc.CardBody(dcc.Graph(figure=_figtimedistplot,
                                        config={"displayModeBar": False})),
-            ]), md=6),
+            ], className="hallazgo-card"), md=6),
             dbc.Col(dbc.Card([
                 html.Div("Análisis por hora del día", className="card-header-custom"),
                 dbc.CardBody(dcc.Graph(figure=_fighora,
                                        config={"displayModeBar": False})),
-            ]), md=6),
+            ], className="hallazgo-card"), md=6),
         ]),
 
-    ], className="tab-content-wrapper")
+    ], className="tab-content-wrapper tab-fade-in")
