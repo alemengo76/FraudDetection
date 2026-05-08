@@ -262,30 +262,6 @@ dbc.Row(dbc.Col(dbc.Card([
     ]),
 ],className="hallazgo-card"), width=12), className="mb-4"),
 
-    
-        dbc.Row(dbc.Col(html.Div([
-    html.H5("Pasos futuros", className="section-title"),
-    html.P(
-        "A partir de los hallazgos del EDA, se plantean los siguientes pasos para "
-        "la etapa de modelado predictivo.",
-        className="section-body",
-    ),
-]), width=12), className="mb-3"),
-
-dbc.Row([
-    _paso_card("1", "Modelado predictivo base",
-               "Implementar un modelo de regresión logística como modelo base de clasificación binaria, para aprovechar las componentes PCA con alto poder discriminativo que se identificaron.",
-               C_BLUE, "paso1"),
-    _paso_card("2", "Técnicas de balanceo de clases",
-               "Aplicar SMOTE o undersampling por el desbalance (0.17% fraude) y así, mejorar la capacidad del modelo para aprender patrones de la clase fraude.",
-               C_RED, "paso2"),
-    _paso_card("3", "Métricas ajustadas al desbalance",
-               "Se debe evaluar el modelo con métricas como F1-score, AUC-ROC y Recall, pues si se usa accuracy, se pueden tener scores altos a pesar del bajo desempeño en la detección del fraude.",
-               C_GREEN, "paso3"),
-    _paso_card("4", "Comparación de modelos",
-               "Usar modelos más complejos como Random Forest o XGBoost después de la regresión logística base, para evaluar relaciones no lineales entre las variables predictoras y la objetivo (Class).",
-               C_PURPLE, "paso4"),
-], className="mb-4"),
 
 
         dbc.Row(dbc.Col(html.H5("Referencias", className="section-title"), width=12),
@@ -311,33 +287,3 @@ dbc.Row([
 
     ], className="tab-content-wrapper tab-fade-in")
     
-    
-def register_callbacks(app):
-
-    pasos = [
-        ("paso1", C_BLUE),
-        ("paso2", C_RED),
-        ("paso3", C_GREEN),
-        ("paso4", C_PURPLE),
-    ]
-
-    for id_base, color in pasos:
-        def make_toggle(idb, col):
-            @app.callback(
-                Output(f"{idb}-collapse", "is_open"),
-                Output(f"{idb}-arrow", "style"),
-                Input(f"{idb}-toggle", "n_clicks"),
-                State(f"{idb}-collapse", "is_open"),
-                prevent_initial_call=True,
-            )
-            def toggle_paso(n, is_open, _idb=idb, _col=col):
-                abierto = not is_open
-                arrow_style = {
-                    "fontSize": "0.7rem",
-                    "color": _col,
-                    "marginLeft": "8px",
-                    "transform": "rotate(180deg)" if abierto else "rotate(0deg)",
-                    "transition": "transform 0.2s ease",
-                }
-                return abierto, arrow_style
-        make_toggle(id_base, color)

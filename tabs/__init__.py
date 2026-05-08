@@ -7,8 +7,7 @@ from tabs import (
     objetivos,
     marco_teorico,
     metodologia,
-    resultados,
-    prediccion,
+    modelo,
     limitaciones,
     conclusiones,
 )

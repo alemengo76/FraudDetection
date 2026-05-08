@@ -12,7 +12,7 @@ import time
 from tabs import (
     introduccion, contexto, problema, objetivos,
     marco_teorico, metodologia, dataset, eda,
-    resultados, prediccion, limitaciones, conclusiones,
+    modelo, limitaciones, conclusiones,
 )
 import tabs.home as home
 
@@ -26,13 +26,13 @@ app = dash.Dash(
 server = app.server
 
 introduccion.register_callbacks(app)
-prediccion.register_callbacks(app)
 contexto.register_callbacks(app)
 marco_teorico.register_callbacks(app)
 metodologia.register_callbacks(app)
 dataset.register_callbacks(app)
 eda.register_callbacks(app)
-conclusiones.register_callbacks(app)
+modelo.register_callbacks(app)  
+
 
 TABS_DASHBOARD = [
     ("introduccion",  "Introducción"),
@@ -43,6 +43,7 @@ TABS_DASHBOARD = [
     ("metodologia",   "Metodología"),
     ("dataset",       "Dataset"),
     ("eda",           "EDA"),
+    ("modelo",        "Modelo"),
     ("limitaciones",  "Limitaciones"),
     ("conclusiones",  "Conclusiones"),
 ]
@@ -164,16 +165,14 @@ def render_dashboard_tab(tab: str):
         "metodologia": metodologia.layout,
         "dataset": dataset.layout,
         "eda": eda.layout,
-        "resultados": resultados.layout,
-        "prediccion": prediccion.layout,
+        "modelo": modelo.layout,
         "limitaciones": limitaciones.layout,
         "conclusiones": conclusiones.layout,
     }
     fn = routing.get(tab)
     content = fn() if fn else html.Div("Pestaña no encontrada.", style={"padding": "40px"})
     
-    # Envolver en un div con key único fuerza a React a recrear el nodo
-    return html.Div(content, key=f"{tab}-{time.time()}")
+    return html.Div(content, key=f"{tab}-{time.time()}", className="tab-fade-in")
 
 
 if __name__ == "__main__":
