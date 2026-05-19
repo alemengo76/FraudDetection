@@ -677,6 +677,29 @@ def _panel_temporal():
                             "Para este análisis se usa la mediana de Amount debido al gran sesgo de esta variable.",
                             className="section-body",
                         ),
+                        
+        
+
+        dbc.Row([
+            dbc.Col(html.Div([
+                html.Div("548.25", className="kpi-value"),
+                html.Div("Chi-cuadrado", className="kpi-label"),
+            ], className="kpi-card text-center"), md=3, className="mb-2"),
+            dbc.Col(html.Div([
+                html.Div("3.09e-101", className="kpi-value"),
+                html.Div("p-valor", className="kpi-label"),
+            ], className="kpi-card text-center"), md=3, className="mb-2"),
+            dbc.Col(html.Div([
+                html.Div("23", className="kpi-value"),
+                html.Div("Grados de libertad", className="kpi-label"),
+            ], className="kpi-card text-center"), md=3, className="mb-2"),
+            dbc.Col(html.Div([
+                html.Div("0.044", className="kpi-value"),
+                html.Div("V de Cramér", className="kpi-label"),
+            ], className="kpi-card text-center"), md=3, className="mb-2"),
+        ], justify="center"),
+
+
                         dcc.Graph(figure=_FIG_TEMPORAL, config={"displayModeBar": False}),
                         html.P(
                             "Note que Time representa los segundos transcurridos desde la primera transacción, luego, "
@@ -686,10 +709,7 @@ def _panel_temporal():
                             "presentan una alta variabilidad, con picos pronunciados, lo que implica que estos no "
                             "siguen un patrón uniforme y pueden concentrarse en intervalos específicos con valores "
                             "elevados. En contraste, el monto en las transacciones no fraudulentas presenta un "
-                            "comportamiento relativamente estable a lo largo del tiempo. No obstante, en el futuro "
-                            "se realizarán pruebas estadísticas para verificar si las diferencias son a causa de un "
-                            "patrón significativo o se atribuyen a la variabilidad aleatoria derivada del tamaño "
-                            "muestral reducido en la clase minoritaria.",
+                            "comportamiento relativamente estable a lo largo del tiempo. No obstante, se aplicó una prueba Chi-cuadrado de independencia entre la hora relativa de la transacción (0–23) y la clase (fraude/no fraude), y el resultado (χ² = 548.25, gl = 23, p ≈ 3.09×10⁻¹⁰¹) dice que hay una asociación estadísticamente significativa; sin embargo, la V de Cramér = 0.044 indica un tamaño de efecto pequeño: aunque la hora sí se asocia con la ocurrencia de fraude, su capacidad para discriminar entre clases es muy limitada, y la significancia es consecuencia principalmente del gran tamaño muestral. Los picos observados en las horas 0, 6 y 14 son reales pero de efecto débil.",
                             className="section-body",
                         ),
                     ]),

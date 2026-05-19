@@ -122,48 +122,29 @@ def layout():
     ]),
 ], className="hallazgo-card mb-3"),
 
-                        # Falso negativo
                         dbc.Card([
-                            html.Div([
-    html.Span("Costo del fraude no detectado (Falso Negativo)", style={"flex": "1"}),
-    html.Span("▼", id="falso-negativo-arrow", style={"fontSize": "0.75rem"}),
-], className="card-header-custom", id="falso-negativo-toggle",
-   style={"cursor": "pointer", "display": "flex", "alignItems": "center"}),
-                            dbc.Collapse(
-                                dbc.CardBody(html.P(
-                                    "Un falso negativo ocurre cuando el modelo clasifica una transacción fraudulenta como legítima. Las consecuencias incluyen pérdidas económicas tanto para la empresa como para el cliente, daño en la reputación de los bancos y posibles sanciones regulatorias. En contextos financieros, este error es considerado el más costoso.",
-                                    className="section-body", style={"marginBottom": 0},
-                                )),
-                                id="falso-negativo-collapse",
-                                is_open=False,
-                            ),
-                        ], className="mb-3"),
+    html.Div("Costo del fraude no detectado (Falso Negativo)", className="card-header-custom"),
+    dbc.CardBody(html.P(
+        "Un falso negativo ocurre cuando el modelo clasifica una transacción fraudulenta como legítima. Las consecuencias incluyen pérdidas económicas tanto para la empresa como para el cliente, daño en la reputación de los bancos y posibles sanciones regulatorias. En contextos financieros, este error es considerado el más costoso.",
+        className="section-body", style={"marginBottom": 0},
+    )),
+], className="hallazgo-card mb-3"),
 
-                        # Falso positivo
-                        dbc.Card([
-                            html.Div([
-    html.Span("Costo de las alarmas falsas (Falso Positivo)", style={"flex": "1"}),
-    html.Span("▼", id="falso-positivo-arrow", style={"fontSize": "0.75rem"}),
-], className="card-header-custom", id="falso-positivo-toggle",
-   style={"cursor": "pointer", "display": "flex", "alignItems": "center"}),
-                            dbc.Collapse(
-                                dbc.CardBody(html.P(
-                                    "Un falso positivo bloquea una transacción legítima, aunque se podría pensar que no es tan grave como un falso negativo, en realidad genera molestias en la experiencia del cliente, llamadas al soporte y posible pérdida de confianza en el servicio. Por lo que se debe encontrar un balance entre precision y recall, por medio de la optimización de F1-score según la tolerancia al riesgo de las empresas.",
-                                    className="section-body", style={"marginBottom": 0},
-                                )),
-                                id="falso-positivo-collapse",
-                                is_open=False,
-                            ),
-                        ]),
+dbc.Card([
+    html.Div("Costo de las alarmas falsas (Falso Positivo)", className="card-header-custom"),
+    dbc.CardBody(html.P(
+        "Un falso positivo bloquea una transacción legítima, aunque se podría pensar que no es tan grave como un falso negativo, en realidad genera molestias en la experiencia del cliente, llamadas al soporte y posible pérdida de confianza en el servicio. Por lo que se debe encontrar un balance entre precision y recall, por medio de la optimización de F1-score según la tolerancia al riesgo de las empresas.",
+        className="section-body", style={"marginBottom": 0},
+    )),
+], className="hallazgo-card"),
 
-                    ], md=7),
-                ],
-                className="mb-4",
-            ),
-        ],
-        className="tab-content-wrapper tab-fade-in",
-    )
-
+], md=7),
+],
+className="mb-4",
+),
+],
+className="tab-content-wrapper tab-fade-in",
+)
 
 # funcionesss
 
@@ -182,22 +163,4 @@ def _kpi(value: str, label: str, accent: str):
     )
 
 def register_callbacks(app):
-
-    for toggle_id in ["falso-negativo", "falso-positivo"]:
-        def make_toggle(tid):
-            @app.callback(
-                Output(f"{tid}-collapse", "is_open"),
-                Output(f"{tid}-arrow", "style"),
-                Input(f"{tid}-toggle", "n_clicks"),
-                State(f"{tid}-collapse", "is_open"),
-                prevent_initial_call=True
-            )
-            def toggle(n, is_open, _tid=tid):
-                abierto = not is_open
-                arrow_style = {
-                    "fontSize": "0.75rem",
-                    "transform": "rotate(180deg)" if abierto else "rotate(0deg)",
-                    "transition": "transform 0.2s ease",
-                }
-                return abierto, arrow_style
-        make_toggle(toggle_id)
+    pass

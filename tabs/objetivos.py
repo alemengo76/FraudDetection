@@ -64,7 +64,7 @@ def layout():
                       "Notar posibles relaciones entre variables mediante el coeficiente "
                       "de correlación de Spearman y el cálculo del VIF."),
             _obj_card("7", "Modelo predictivo",
-                      "Entrenar y evaluar un modelo de regresión logística mediante GridSearchCV y validación estratificada."),
+                      "Entrenar y evaluar un modelo robusto mediante GridSearchCV, validación estratificada y técnicas de balanceo."),
             _obj_card("8", "Sistema de predicción",
                       "Crear un formulario que le permita al usuario ingresar características de una transacción y poder predecir si es fraudulenta."),
         ]),

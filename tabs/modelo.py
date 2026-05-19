@@ -8,11 +8,13 @@ F1=0.8444 · Recall=0.80 · Precisión=0.8869 · AUC=0.9629
 
 import os
 import numpy as np
+import pandas as pd
 import joblib
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback_context, no_update
 import plotly.graph_objects as go
 from dash import html, dcc, Input, Output, State, callback_context, no_update
+import json
 
 from sklearn.metrics import (
     roc_curve,
@@ -25,6 +27,19 @@ from sklearn.metrics import (
     average_precision_score
 )
 
+# Al inicio del módulo, después de los imports
+_CACHE_PATH = r"C:\Users\Alejandra\Documents\fraud_dashboard\assets\metricas_cache.json"
+try:
+    with open(_CACHE_PATH) as f:
+        _CACHE = json.load(f)
+    print(f"✅ Cache cargado. Claves: {list(_CACHE.keys())}")
+except FileNotFoundError:
+    print(f"❌ Archivo no encontrado: {_CACHE_PATH}")
+    _CACHE = None
+except Exception as e:
+    print(f"❌ Error cargando cache: {e}")
+    _CACHE = None
+    
 # ── Paleta profesional ────────────────────────────────────────────────────────
 # Azul pizarra oscuro / gris carbón / acento índigo apagado
 C = {
@@ -50,38 +65,51 @@ C = {
 # ── Datos reales del notebook ─────────────────────────────────────────────────
 
 MEJOR_MODELO = {
-    "nombre":    "XGBoost + Optuna + ADASYN",
-    "accuracy":  0.999507,
-    "precision": 0.894118,  # era 0.8869
-    "recall":    0.800000,
-    "f1":        0.844444,
-    "auc":       0.962863,  # era 0.9629
-    "ap":        0.8095,
-    "tp": 76, "fn": 19, "fp": 9, "tn": 56642,
+    "nombre":    _CACHE["ganador_nombre"] if _CACHE else "XGBoost + ADASYN",
+    "accuracy":  _CACHE["accuracy"]  if _CACHE else 0.9995,
+    "precision": _CACHE["precision"] if _CACHE else 0.9176,
+    "recall":    _CACHE["recall"]    if _CACHE else 0.7959,
+    "f1":        _CACHE["f1"]        if _CACHE else 0.8525,
+    "auc":       _CACHE["auc"]       if _CACHE else 0.9727,
+    "ap":        _CACHE["ap"]        if _CACHE else 0.8334,
+    "tp": _CACHE["cm"][1][1] if _CACHE else 78,
+    "fn": _CACHE["cm"][1][0] if _CACHE else 20,
+    "fp": _CACHE["cm"][0][1] if _CACHE else 7,
+    "tn": _CACHE["cm"][0][0] if _CACHE else 56641,
 }
 
-TABLA = [
-    ("XGBoost",        "Class Weight", 0.999542, 0.960000, 0.757895, 0.847059, 0.975030, False),
-    ("XGBoost",        "Sin balanceo", 0.999542, 0.972603, 0.747368, 0.845238, 0.969487, False),
-    ("XGBoost",        "SMOTE",        0.999489, 0.883721, 0.800000, 0.839779, 0.965544, False),
-    ("XGBoost",        "ADASYN",       0.999507, 0.894118, 0.800000, 0.844444, 0.962863, True),
-    ("Random Forest",  "Class Weight", 0.999366, 0.893333, 0.705263, 0.788235, 0.948195, False),
-    ("Random Forest",  "Sin balanceo", 0.999383, 0.928571, 0.684211, 0.787879, 0.962371, False),
-    ("Random Forest",  "ADASYN",       0.999189, 0.769231, 0.736842, 0.752688, 0.966934, False),
-    ("Random Forest",  "SMOTE",        0.999137, 0.739583, 0.747368, 0.743455, 0.952652, False),
-    ("Reg. Logística", "Sin balanceo", 0.999154, 0.850746, 0.600000, 0.703704, 0.956134, False),
-    ("Reg. Logística", "SMOTE",        0.983488, 0.080677, 0.852632, 0.147407, 0.953266, False),
-    ("Reg. Logística", "Class Weight", 0.983294, 0.079803, 0.852632, 0.145946, 0.954345, False),
-    ("Reg. Logística", "ADASYN",       0.908399, 0.016487, 0.915789, 0.032390, 0.960097, False),
-]
+TABLA = (
+    [(r["modelo"], r["tecnica"],
+      r["accuracy"], r["precision"], r["recall"], r["f1"], r["auc"], r["es_ganador"])
+     for r in _CACHE["tabla_bootstrap"]]
+    if _CACHE and _CACHE.get("tabla_bootstrap")
+    else [
+        ("XGBoost",        "Sin Balanceo",  0.9995, 0.9605, 0.7449, 0.8391, 0.9798, False),
+        ("XGBoost",        "Class Weight",  0.9995, 1.0000, 0.6837, 0.8121, 0.9679, False),
+        ("XGBoost",        "ADASYN",        0.9995, 0.9176, 0.7959, 0.8525, 0.9727, True),
+        ("XGBoost",        "SMOTE",         0.9995, 0.8966, 0.7959, 0.8432, 0.9774, False),
+        ("Random Forest",  "Sin Balanceo",  0.9994, 0.9211, 0.7143, 0.8046, 0.9608, False),
+        ("Random Forest",  "ADASYN",        0.9995, 0.9250, 0.7551, 0.8315, 0.9682, False),
+        ("Random Forest",  "SMOTE",         0.9995, 0.9136, 0.7551, 0.8268, 0.9749, False),
+        ("Random Forest",  "Class Weight",  0.9995, 0.9467, 0.7245, 0.8208, 0.9515, False),
+        ("Reg. Logística", "Sin Balanceo",  0.9991, 0.8406, 0.5918, 0.6946, 0.9697, False),
+        ("Reg. Logística", "SMOTE",         0.9992, 0.7653, 0.7653, 0.7653, 0.9759, False),
+        ("Reg. Logística", "Class Weight",  0.9991, 0.8406, 0.5918, 0.6946, 0.9715, False),
+        ("Reg. Logística", "ADASYN",        0.9467, 0.0284, 0.8980, 0.0550, 0.9723, False),
+    ]
+)
 
-IMPORTANCIA = [
-    ("V14",    0.370), ("V10",    0.330), ("V4",     0.050),
-    ("V12",    0.045), ("V17",    0.040), ("V11",    0.030),
-    ("V3",     0.028), ("V9",     0.025), ("V16",    0.022),
-    ("V7",     0.018), ("V2",     0.016), ("V1",     0.010),
-    ("Amount", 0.008), ("V6",     0.007), ("V18",    0.006),
-]
+IMPORTANCIA = (
+    list(zip(_CACHE["feature_names"], _CACHE["feature_importance"]))[:15]
+    if _CACHE and _CACHE.get("feature_names")
+    else [
+        ("V14", 0.4101), ("V17", 0.1602), ("V11", 0.1026),
+        ("V10", 0.0718), ("V21", 0.0446), ("V4",  0.0416),
+        ("V3",  0.0314), ("V12", 0.0230), ("V1",  0.0102),
+        ("Time",0.0100), ("V8",  0.0085), ("V13", 0.0080),
+        ("V7",  0.0071), ("V20", 0.0062), ("Amount", 0.0058),
+    ]
+)
 
 PERFIL = {
     "Variable": ["V14", "V10", "V4", "V12", "V17", "V11", "V3", "Amount"],
@@ -89,18 +117,24 @@ PERFIL = {
     "Fraude":   [5.89,  -5.33,  4.52, -6.81,  2.25,  2.14, -3.04, 122.21],
 }
 
-EJEMPLO_LEGITIMO = {
-    "amount": 9, "time": 10,
-    "v": [-1.36,-0.07,2.54,1.38,-0.34,0.46,0.24,0.10,0.36,0.09,
-          -0.55,-0.62,-0.99,-0.31,1.47,-0.47,0.21,0.03,0.40,0.25,
-          -0.02,0.28,-0.11,0.07,0.13,-0.19,0.13,0.00]
-}
 EJEMPLO_FRAUDE = {
-    "amount": 149, "time": 2,
-    "v": [-2.31,1.95,-1.61,3.99,-0.52,2.22,-3.30,-0.73,-0.09,-0.17,
-          -0.45,-1.42,0.89,-0.02,-0.62,-1.09,-0.77,0.86,-0.01,0.31,
-           0.44,-0.29,0.04,0.13,-0.14,0.00,0.02,0.00]
+    "time": 40919.0, "amount": 112.33,
+    "v": [-2.740483,3.658095,-4.110636,5.340242,-2.666775,-0.092782,-4.388699,-0.280133,-2.821895,
+          -4.46628416302479,3.96979981229186,-7.34671678644283,-1.16331176961366,-8.22556891234807,
+          0.82500183194645,-6.77286703365235,-8.81578542555918,-4.56885928410549,1.12659865645629,
+          0.185325269832133,2.41749541196206,-0.0977119508973041,0.382154506973307,-0.154756519767143,
+          -0.40395592644091,0.277894930235294,0.830061638644528,0.218690442242457]
 }
+
+EJEMPLO_LEGITIMO = {
+    "time": 87777.0, "amount": 1.00,
+    "v": [-2.871828,2.681642,-1.507654,-2.948048,0.009796,-0.941978,0.153794,1.204963,0.675816,
+          -0.0692900179722466,-1.76092241531116,0.615283754563226,0.67186707355509,0.540743868182719,
+          -0.482577726683129,0.713383267976609,-0.643516449033568,-0.625185652222858,-0.72939486328347,
+          0.435521592999697,-0.37813796011417,-1.06235451575918,0.0393729172971228,0.0260057014705198,
+          0.423481074624709,0.413531185241979,0.476027499455305,0.343266623974539]
+}
+
 
 MODELOS_DIR = r"C:\Users\Alejandra\Documents\Modelos_Optimizados"
 DATA_TEST_PATH = r"C:\Users\Alejandra\Documents\Modelos_Optimizados\Xy_test.joblib"
@@ -193,8 +227,8 @@ _LAYOUT_BASE = dict(
 
 def _fig_auc_comparativo():
     etiquetas = [f"{r[0]}<br>{r[1]}" for r in TABLA]
-    f1s  = [r[5] for r in TABLA]
-    aucs = [r[6] for r in TABLA]
+    f1s  = [r[5] for r in TABLA]   
+    aucs = [r[6] for r in TABLA]   
     colores_f1  = [C["gold"]   if r[7] else C["accent"] for r in TABLA]
     colores_auc = ["rgba(154,124,56,0.40)" if r[7] else "rgba(45,74,122,0.35)" for r in TABLA]
 
@@ -212,8 +246,8 @@ def _fig_auc_comparativo():
         yaxis=dict(title="Score", range=[0, 1.05], gridcolor=C["grid"]),
         legend=dict(orientation="h", x=0, y=-0.28, font=dict(size=10)),
         margin=dict(l=50, r=20, t=14, b=130),
-        annotations=[dict(
-            x="XGBoost<br>ADASYN", y=0.8444 + 0.03,
+         annotations=[dict(
+            x="XGBoost<br>ADASYN", y=0.8525 + 0.03,
             text="★ Seleccionado", showarrow=False,
             font=dict(size=9, color=C["gold"]), xanchor="center"
         )]
@@ -251,16 +285,22 @@ def _fig_roc(auc_val=None, fpr_arr=None, tpr_arr=None):
     return fig
 
 
-def _fig_precision_recall(ap=None):
+def _fig_precision_recall(ap=None, pr_precision=None, pr_recall=None):
     ap = ap or MEJOR_MODELO["ap"]
     baseline = 473 / 283726
-    recall_vals = np.linspace(0, 1, 300)
-    prec_vals = np.clip(
-        np.where(recall_vals <= 0.80,
-                 1.0 - 0.05 * recall_vals,
-                 1.0 - 0.05 * 0.80 - 3.5 * (recall_vals - 0.80)),
-        0, 1
-    )
+
+    if pr_precision is not None and pr_recall is not None:
+        recall_vals = pr_recall
+        prec_vals   = pr_precision
+    else:
+        # fallback simulado
+        recall_vals = np.linspace(0, 1, 300)
+        prec_vals = np.clip(
+            np.where(recall_vals <= 0.80,
+                     1.0 - 0.05 * recall_vals,
+                     1.0 - 0.05 * 0.80 - 3.5 * (recall_vals - 0.80)),
+            0, 1
+        )
     fig = go.Figure()
     fig.add_scatter(x=[0, 1], y=[baseline, baseline], mode="lines",
                     line=dict(color="#B8A05A", dash="dash", width=1.5),
@@ -339,61 +379,146 @@ def _fig_importancia(importancia=None):
 # ── Tabla comparativa HTML ────────────────────────────────────────────────────
 
 def _tabla_comparativa():
-    cols = ["Modelo", "Balanceo", "Accuracy", "Precisión", "Recall", "F1", "AUC", ""]
-    header = html.Div(
-        [html.Div(c, style={
-            "fontSize": "0.68rem", "fontWeight": "700", "color": C["muted"],
-            "textTransform": "uppercase", "letterSpacing": "0.5px"
-        }) for c in cols],
-        style={
-            "display": "grid",
-            "gridTemplateColumns": "150px 120px 90px 90px 80px 80px 80px 70px",
-            "background": C["bg"], "padding": "10px 8px",
-            "borderRadius": "6px 6px 0 0",
-            "borderBottom": f"2px solid {C['border']}"
-        }
-    )
-    rows = []
-    for r in TABLA:
-        modelo, bal, acc, prec, rec, f1, auc_v, ganador = r
-        row_style = {
-            "display": "grid",
-            "gridTemplateColumns": "150px 120px 90px 90px 80px 80px 80px 70px",
-            "alignItems": "center", "padding": "8px 8px",
-            "background": C["gold_bg"] if ganador else "transparent",
-            "border": f"1px solid {C['gold']}55" if ganador else "none",
-            "borderBottom": "none" if ganador else f"1px solid {C['grid']}",
-            "borderRadius": "6px" if ganador else "0",
-            "marginBottom": "2px" if ganador else "0"
-        }
-        badge = _badge("Óptimo", C["gold"], C["gold_bg"], C["gold"]) if ganador else html.Span()
-        rows.append(html.Div([
-            html.Div(modelo,         style={"fontSize": "0.82rem", "fontWeight": "600", "color": C["text"]}),
-            html.Div(bal,            style={"fontSize": "0.82rem", "color": C["muted"]}),
-            html.Div(f"{acc:.4f}",   style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
-            html.Div(f"{prec:.4f}",  style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
-            html.Div(f"{rec:.4f}",   style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
-            html.Div(f"{f1:.4f}",    style={
-                "fontSize": "0.84rem", "fontWeight": "700",
-                "color": C["ok"] if ganador else C["text"],
-                "fontFamily": "monospace"
-            }),
-            html.Div(f"{auc_v:.4f}", style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
-            badge
-        ], style=row_style))
+    # Intentar usar datos bootstrap del cache; caer en TABLA hardcodeada si no hay
+    use_bootstrap = _CACHE and _CACHE.get("tabla_bootstrap")
 
-    return html.Div([
-        header,
-        html.Div(rows),
-        html.Div([
+
+    if use_bootstrap:
+        datos      = _CACHE["tabla_bootstrap"]
+        ref_nombre = _CACHE.get("ref_nombre", "—")
+        cols = ["Modelo", "Balanceo", "Accuracy", "Precisión", "Recall", "F1", "F1 IC 95%", "PR AUC", "PR AUC IC 95%", "AUC", "Δ vs ref", "Sig.", ""]
+        grid = "140px 110px 75px 80px 70px 70px 110px 75px 110px 75px 80px 40px 70px"
+
+        header = html.Div(
+            [html.Div(c, style={
+                "fontSize": "0.67rem", "fontWeight": "700", "color": C["muted"],
+                "textTransform": "uppercase", "letterSpacing": "0.5px"
+            }) for c in cols],
+            style={
+                "display": "grid", "gridTemplateColumns": grid,
+                "background": C["bg"], "padding": "10px 8px",
+                "borderRadius": "6px 6px 0 0",
+                "borderBottom": f"2px solid {C['border']}"
+            }
+        )
+
+        rows = []
+        for r in datos:
+            ganador = r["es_ganador"]
+            es_ref  = r["es_ref"]
+            sig     = r["sig"]
+
+            row_style = {
+                "display": "grid", "gridTemplateColumns": grid,
+                "alignItems": "center", "padding": "8px 8px",
+                "background": C["gold_bg"] if ganador else "transparent",
+                "border": f"1px solid {C['gold']}55" if ganador else "none",
+                "borderBottom": "none" if ganador else f"1px solid {C['grid']}",
+                "borderRadius": "6px" if ganador else "0",
+                "marginBottom": "2px" if ganador else "0",
+            }
+
+            if es_ref:
+                delta_cell = html.Div("— ref", style={"fontSize": "0.74rem", "color": C["muted"], "fontFamily": "monospace"})
+            else:
+                diff        = r["diff_vs_ref"]
+                delta_color = C["danger"] if sig else C["muted"]
+                delta_cell  = html.Div(f"{diff:+.4f}", style={"fontSize": "0.74rem", "fontFamily": "monospace", "color": delta_color})
+
+            sig_cell = html.Div(
+                "✗" if sig else "≈",
+                style={"fontSize": "0.80rem", "fontWeight": "700",
+                       "color": C["danger"] if sig else C["ok"], "textAlign": "center"}
+            )
+
+            rows.append(html.Div([
+                html.Div(r["modelo"],  style={"fontSize": "0.79rem", "fontWeight": "600" if ganador else "400", "color": C["text"]}),
+                html.Div(r["tecnica"], style={"fontSize": "0.79rem", "color": C["muted"]}),
+                html.Div(f"{r['accuracy']:.4f}", style={"fontSize": "0.79rem", "fontFamily": "monospace"}),
+                html.Div(f"{r['precision']:.4f}", style={"fontSize": "0.79rem", "fontFamily": "monospace"}),
+                html.Div(f"{r['recall']:.4f}",    style={"fontSize": "0.79rem", "fontFamily": "monospace"}),
+                html.Div(f"{r['f1']:.4f}", style={
+                    "fontSize": "0.80rem", "fontWeight": "700" if ganador else "400",
+                    "color": C["ok"] if ganador else C["text"], "fontFamily": "monospace"
+                }),
+                html.Div(f"[{r['f1_ic'][0]:.3f}, {r['f1_ic'][1]:.3f}]",
+                         style={"fontSize": "0.72rem", "fontFamily": "monospace", "color": C["muted"]}),
+                html.Div(f"{r['ap']:.4f}", style={"fontSize": "0.79rem", "fontFamily": "monospace"}),
+                html.Div(f"[{r['pr_ic'][0]:.3f}, {r['pr_ic'][1]:.3f}]",
+                         style={"fontSize": "0.72rem", "fontFamily": "monospace", "color": C["muted"]}),
+                html.Div(f"{r['auc']:.4f}", style={"fontSize": "0.79rem", "fontFamily": "monospace"}),
+                delta_cell,
+                sig_cell,
+                _badge("Óptimo", C["gold"], C["gold_bg"], C["gold"]) if ganador else html.Span(),
+            ], style=row_style))
+
+        footer = html.Div([
+            html.Div([
+                _badge("Óptimo", C["gold"], C["gold_bg"], C["gold"]),
+                html.Span(
+                    "seleccionado entre modelos estadísticamente equivalentes al de mayor PR AUC · desempate por F1 · Bootstrap 500 iter. · IC 95%",
+                    style={"fontSize": "0.74rem", "color": C["muted"]}
+                ),
+            ], style={"marginBottom": "5px"}),
+            html.Div([
+                html.Span("Sig. (✗)", style={"fontSize": "0.74rem", "color": C["danger"], "fontWeight": "700", "marginRight": "6px"}),
+                html.Span("= diferencia significativa vs referencia · ", style={"fontSize": "0.74rem", "color": C["muted"]}),
+                html.Span("≈", style={"fontSize": "0.74rem", "color": C["ok"], "fontWeight": "700", "marginRight": "4px"}),
+                html.Span(f"= equivalente a {ref_nombre} (mayor PR AUC)",
+                          style={"fontSize": "0.74rem", "color": C["muted"]}),
+            ])
+        ], style={"padding": "10px 8px", "borderTop": f"1px solid {C['grid']}", "marginTop": "4px"})
+
+    else:
+        # Fallback: tabla simple sin bootstrap
+        cols = ["Modelo", "Balanceo", "Accuracy", "Precisión", "Recall", "F1", "AUC", ""]
+        grid = "150px 120px 90px 90px 80px 80px 80px 70px"
+
+        header = html.Div(
+            [html.Div(c, style={
+                "fontSize": "0.67rem", "fontWeight": "700", "color": C["muted"],
+                "textTransform": "uppercase", "letterSpacing": "0.5px"
+            }) for c in cols],
+            style={
+                "display": "grid", "gridTemplateColumns": grid,
+                "background": C["bg"], "padding": "10px 8px",
+                "borderRadius": "6px 6px 0 0",
+                "borderBottom": f"2px solid {C['border']}"
+            }
+        )
+
+        rows = []
+        for modelo, bal, acc, prec, rec, f1, auc_v, ganador in TABLA:
+            row_style = {
+                "display": "grid", "gridTemplateColumns": grid,
+                "alignItems": "center", "padding": "8px 8px",
+                "background": C["gold_bg"] if ganador else "transparent",
+                "border": f"1px solid {C['gold']}55" if ganador else "none",
+                "borderBottom": "none" if ganador else f"1px solid {C['grid']}",
+                "borderRadius": "6px" if ganador else "0",
+                "marginBottom": "2px" if ganador else "0",
+            }
+            rows.append(html.Div([
+                html.Div(modelo,         style={"fontSize": "0.82rem", "fontWeight": "600", "color": C["text"]}),
+                html.Div(bal,            style={"fontSize": "0.82rem", "color": C["muted"]}),
+                html.Div(f"{acc:.4f}",   style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
+                html.Div(f"{prec:.4f}",  style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
+                html.Div(f"{rec:.4f}",   style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
+                html.Div(f"{f1:.4f}",    style={"fontSize": "0.84rem", "fontWeight": "700",
+                                                 "color": C["ok"] if ganador else C["text"], "fontFamily": "monospace"}),
+                html.Div(f"{auc_v:.4f}", style={"fontSize": "0.82rem", "fontFamily": "monospace"}),
+                _badge("Óptimo", C["gold"], C["gold_bg"], C["gold"]) if ganador else html.Span(),
+            ], style=row_style))
+
+        footer = html.Div([
             _badge("Óptimo", C["gold"], C["gold_bg"], C["gold"]),
             html.Span(
-                "seleccionado por mayor Recall (0.80) con F1 competitivo · "
-                "Optimización: Optuna (50 trials) · Métrica objetivo: F1",
-                style={"fontSize": "0.76rem", "color": C["muted"]}
+                "seleccionado por mayor Recall con F1 competitivo · Optimización: Optuna (50 trials)",
+                style={"fontSize": "0.74rem", "color": C["muted"]}
             )
         ], style={"padding": "10px 8px", "borderTop": f"1px solid {C['grid']}", "marginTop": "4px"})
-    ])
+
+    return html.Div([header, html.Div(rows), footer])
 
 # ── Carga de joblibs ──────────────────────────────────────────────────────────
 
@@ -427,31 +552,28 @@ def _slider_block(prefix, n):
                 "fontFamily": "monospace"
             })
         ], style={"display": "flex", "justifyContent": "space-between", "marginBottom": "2px"}),
-        dcc.Slider(id=f"{prefix}-v{n}", min=-5, max=5, step=0.1, value=0,
+        dcc.Slider(id=f"{prefix}-v{n}", min=-15, max=15, step=0.1, value=0,
                    marks=None, tooltip={"always_visible": False}, updatemode="drag")
     ], style={"marginBottom": "9px"})
 
 
+_PIPELINE = None
+
+def _get_pipeline():
+    global _PIPELINE
+    if _PIPELINE is None:
+        _PIPELINE = joblib.load(os.path.join(MODELOS_DIR, "optuna_XGBoost_ADASYN.joblib"))
+    return _PIPELINE
+
 def _compute_fraud_prob(amount, time_h, v_vals):
-    v = v_vals
-    logit = (
-        -3.0
-        + (amount / 5000) * 2.5
-        + (1.2 if time_h < 4 or time_h > 22 else 0)
-        + v[13] * 0.85
-        + v[9]  * (-0.70)
-        + v[3]  * 0.40
-        + v[11] * (-0.45)
-        + v[16] * 0.30
-        + v[10] * 0.25
-        + v[2]  * (-0.30)
-        + v[8]  * (-0.20)
-        + v[15] * 0.20
-        + v[6]  * 0.15
-        + v[1]  * 0.15
-        + v[0]  * (-0.15)
-    )
-    return float(np.clip(1 / (1 + np.exp(-logit)), 0, 1))
+    cols = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount"]
+    fila = [time_h] + list(v_vals) + [amount]
+    df = pd.DataFrame([fila], columns=cols)
+    try:
+        pipe = _get_pipeline()
+        return float(pipe.predict_proba(df)[0][1])
+    except Exception:
+        return 0.0
 
 
 # ── Credit Card Component ─────────────────────────────────────────────────────
@@ -565,8 +687,8 @@ def layout():
                 "La métrica de optimización fue el ", html.Strong("F1-Score"),
                 " (media armónica entre Precisión y Recall). Entre 12 combinaciones evaluadas, "
                 "se seleccionó ", html.Strong("XGBoost + Optuna + ADASYN"),
-                " por el mejor Recall (80 %) con F1=0.8444 y Precisión=0.8869. "
-                "El modelo es 476 veces mejor que clasificador aleatorio (AP=0.8095 vs baseline=0.0017)."
+                " por el mejor Recall (79.59 %) con F1=0.8525 y Precisión=0.9176. "
+                "El modelo es 502 veces mejor que clasificador aleatorio (AP=0.8334 vs baseline=0.0017)."
             ], style={
                 "fontSize": "0.93rem", "color": C["muted"],
                 "lineHeight": "1.75", "margin": 0
@@ -605,31 +727,36 @@ def layout():
 
         # ── Conclusión ────────────────────────────────────────────────────────
         dbc.Card([
-            html.Div(
-                _card_title("Conclusión", "Razonamiento detrás de la elección final"),
-                className="card-header-custom"
-            ),
-            dbc.CardBody([
-                html.P([
-                    "Se observa que el mejor Recall (0.8526) es el de ",
-                    html.Strong("Regresión Logística + Optuna + SMOTE"),
-                    "; sin embargo, a costa de una precisión realmente mínima de 0.080677, esto no es viable para ninguna empresa o banco gastar tantos costos y molestias en el cliente identificando demasiadas transacciones como fraudulentas cuando son legítimas."
-                ], className="section-body"),
-                html.P([
-                    "En ese orden de ideas, a pesar de que el mejor F1 score (0.847059) es el de ",
-                    html.Strong("XGBoost + Optuna + Class Weight"),
-                    " por su alta precisión y recall moderado, se decidió escoger como mejor modelo ",
-                    html.Strong("XGBoost + Optuna + ADASYN"),
-                    ", pues su F1 de 0.844444 es bastante similar al previamente mencionado, mas, tiene un mejor recall (0.80), por una precision levemente más baja."
-                ], className="section-body"),
-                html.P(
-                    "Con esto en mente, aunque se buscaba optimizar F1 score, no basta con solo ver la métrica, sino analizar más a profundidad para escoger, según la intención del cliente, el modelo que sea más adecuado con lo que necesita, en nuestro caso fue identificar fraudes, es decir tener un alto recall, pero sin sacrificar excesivamente la precisión.",
-                    className="section-body", style={"marginBottom": 0}
-                ),
-            ]),
-        ], className="mb-3", style={"borderTop": f"3px solid {C['accent']}"}),
+    html.Div(
+        _card_title("Conclusión", "Razonamiento detrás de la elección final"),
+        className="card-header-custom"
+    ),
+    dbc.CardBody([
+        html.P([
+            "En este proceso se calcula el PR AUC en test para cada modelo posible y se elige el mejor como referencia. "
+            "Luego, se compara por medio de bootstrap, se remuestrean los datos de test 500 veces y en cada muestra se calcula "
+            "la diferencia de PR AUC entre la referencia y cada modelo, si el intervalo de confianza al 95% no tiene el 0, "
+            "la diferencia es significativa, pero los que no son significativamente diferentes a la referencia, que es el de mejor métrica, "
+            "hacen parte del grupo de los que son estadísticamente equivalentes. Con esto en mente, se selecciona el mejor F1 entre estos. "
+            "A partir de este proceso, se obtienen los mejores modelos, basados en un enfoque estadístico que lo respalda."
+        ], className="section-body"),
+        html.P([
+            "Por un lado, el mejor recall es del modelo de ",
+            html.Strong("Regresión Logística + Optuna + ADASYN"),
+            " (0.8980), pero a cambio de una precisión de 0.0284, esto no es viable para ninguna empresa o banco gastar tantos costos "
+            "y molestias en el cliente identificando demasiadas transacciones como fraudulentas cuando son legítimas."
+        ], className="section-body"),
+        html.P([
+            html.Strong("XGBoost + Optuna + ADASYN"),
+            ", tiene resultados realmente favorables, un recall cercano al 80% y una precisión aproximada a 0.92 son métricas muy buenas, "
+            "y a pesar de no tener el mejor PR AUC es estadísticamente equivalente al de ",
+            html.Strong("XGBoost + Optuna + Sin balanceo"),
+            ", que es el mayor (0.8412).",
+        ], className="section-body", style={"marginBottom": 0}),
+    ]),
+], className="mb-3", style={"borderTop": f"3px solid {C['accent']}"}),
 
-    ], id="modelo-tab-resumen")
+], id="modelo-tab-resumen")
 
     # ═══════════════════════════════════════════════════════════════════════════
     # TAB 2 · ¿QUÉ TAN BUENO ES?
@@ -777,7 +904,11 @@ def layout():
                         className="card-header-custom"
                     ),
                     dbc.CardBody(
-                        dcc.Graph(figure=_fig_roc(), config={"displayModeBar": False},
+                        dcc.Graph(figure=_fig_roc(
+    auc_val=_CACHE["auc"] if _CACHE else None,
+    fpr_arr=_CACHE["fpr"] if _CACHE else None,
+    tpr_arr=_CACHE["tpr"] if _CACHE else None,
+), config={"displayModeBar": False},
                                   style={"height": "280px"})
                     ),
                 ], style={"borderTop": f"3px solid {C['accent']}"}),
@@ -808,8 +939,11 @@ def layout():
                         className="card-header-custom"
                     ),
                     dbc.CardBody(
-                        dcc.Graph(figure=_fig_precision_recall(),
-                                  config={"displayModeBar": False},
+                        dcc.Graph(figure=_fig_precision_recall(
+    ap=_CACHE["ap"] if _CACHE else None,
+    pr_precision=_CACHE["pr_precision"] if _CACHE else None,
+    pr_recall=_CACHE["pr_recall"] if _CACHE else None,
+), config={"displayModeBar": False},
                                   style={"height": "280px"})
                     ),
                 ], style={"borderTop": f"3px solid {C['accent']}"}),
@@ -838,9 +972,9 @@ def layout():
                 "margin": "0 0 8px", "color": C["text"]
             }),
             html.Ul([
-                html.Li("Un AUC = 0.9629 significa que el modelo distingue los fraudes de los no fraudes con un 96% de efectividad"),
-                html.Li("La curva PR mantiene la precisión ~100% hasta recall≈0.80, después se detectan el resto de fraudes a coste de más falsas alarmas. Por otro lado, el modelo es 476 veces mejor que un clasificador aleatorio (AP=0.8095 vs baseline=0.0017) subiendo recall mientras mantiene un precision alto."),
-                html.Li("La matriz de confusión muestra que se escogió un modelo más agresivo que detectara más fraudes a costa de algunas falsas alarmas. Solo 19 fraudes fueron clasificados como legítimos, a costa de subir el número de falsas alarmas a 9."),
+                html.Li("Un AUC = 0.9727 significa que el modelo distingue los fraudes de los no fraudes con un 97% de efectividad"),
+                html.Li("La curva PR mantiene la precisión ~100% hasta recall≈0.80, después se detectan el resto de fraudes a coste de más falsas alarmas. Por otro lado, el modelo es 502 veces mejor que un clasificador aleatorio (AP=0.8334 vs baseline=0.0017) subiendo recall mientras mantiene un precision alto."),
+                html.Li("La matriz de confusión muestra que se escogió un modelo más agresivo que detectara más fraudes a costa de algunas falsas alarmas. Solo 20 fraudes fueron clasificados como legítimos, a costa de subir el número de falsas alarmas a 7."),
                 html.Li("V14 y V10 concentran ~70% del poder predictivo (ganancia de información). Lo cual es esperable, pues las variables en la gráfica fueron clasificadas con alto y mediano poder discriminativo en el análisis exploratorio."),
             ], style={
                 "fontSize": "0.93rem", "color": C["muted"],
@@ -1304,7 +1438,7 @@ def register_callbacks(app):
             "LogisticRegression": "Reg. Logística",
         }
         _t = {
-            "Sin Balanceo": "Sin balanceo",
+            "Sin Balanceo": "Sin Balanceo",
             "SMOTE":        "SMOTE",
             "ADASYN":       "ADASYN",
             "Class Weight": "Class Weight",

@@ -196,15 +196,13 @@ def layout():
                 "Desbalance de clases extremo",
                 "Solo 473 transacciones (0.17%) son fraudulentas frente a 283.253 no "
                 "fraudulentas. Este desbalance es el principal desafío y "
-                "exige estrategias como SMOTE o ajuste de pesos de clase.",
+                "exige estrategias empleadas en el modeladocomo SMOTE o ajuste de pesos de clase.",
                 C_RED,
             ),
             _hallazgo_card(
                 "02",
                 "Variables PCA con alto poder discriminativo",
-                "V2, V3, V4, V7, V9, V10, V11, V12, V14, V16 y V17 presentan rangos "
-                "intercuartílicos separados entre clases y RBC > 0.5, siendo las más "
-                "útiles para detectar fraude. V14 lidera con RBC = −0.894.",
+                "V2, V3, V4, V7, V9, V10, V11, V12, V14, V16 y V17 presentan la mayor capacidad discriminativa, y confirman su importancia apareciendo como principales variables en el feature importance.",
                 C_BLUE,
             ),
             _hallazgo_card(
@@ -226,9 +224,7 @@ def layout():
             _hallazgo_card(
                 "05",
                 "Baja multicolinealidad en variables PCA",
-                "Las componentes V1–V28 presentan VIF bajos, lo que confirma la ortogonalidad "
-                "del PCA. Solo Amount muestra multicolinealidad severa (VIF = 12.30), por "
-                "lo que podría generar redundancia al incluirse junto al resto.",
+                "Las componentes V1–V28 presentan VIF bajos. Solo Amount muestra multicolinealidad severa (VIF = 12.30), por eso se usaron XGBoost y Random Forest que manejan mejor la multicolinealidad que la regresión logística.",
                 C_GREEN,
             ),
             _hallazgo_card(
@@ -256,11 +252,58 @@ dbc.Row(dbc.Col(dbc.Card([
             className="section-body",
         ),
         html.P(
-            "El fuerte desbalance de clases (99.83% vs 0.17%) es el principal desafío para el futuro modelo. También, la multicolinealidad de Amount (VIF = 12.30) dice que hay que tener cuidado al incluirla junto con el resto de variables en el modelo. En general, el EDA muestra que las componentes PCA con alto poder discriminativo van a ser las variables más valiosas para el modelado, mientras que Time y Amount necesitan transformaciones o combinación con otras variables para mejorar su aporte al modelo.",
+            "El fuerte desbalance de clases (99.83% vs 0.17%) es el principal desafío para el modelado. En general, el EDA muestra que las componentes PCA con alto poder discriminativo van a ser las variables más valiosas para el modelado, mientras que Time y Amount necesitan transformaciones o combinación con otras variables para mejorar su aporte al modelo.",
+            className="section-body",
+        ),
+        html.P(
+            "Tras el EDA, se evaluaron 12 combinaciones de tres algoritmos (Regresión Logística, Random Forest y XGBoost) con cuatro técnicas de balanceo (sin balanceo, SMOTE, ADASYN y pesos de clase), optimizados mediante búsqueda bayesiana (Optuna). La elección del mejor modelo se realizó mediante Bootstrap con 500 iteraciones sobre PR AUC, seleccionando como ganador XGBoost + ADASYN por tener el mayor F1-Score (0.8525) entre los modelos estadísticamente equivalentes a la referencia. Este modelo logra un AUC de 0.9727 y un Recall del 79.59%, detectando 78 de los 98 fraudes del conjunto de prueba con solo 7 falsas alarmas.",
             className="section-body", style={"marginBottom": 0},
         ),
     ]),
 ],className="hallazgo-card"), width=12), className="mb-4"),
+
+
+    dbc.Row(dbc.Col(html.H5("Pasos Futuros", className="section-title"), width=12),
+                className="mb-2"),
+
+        dbc.Row(dbc.Col(html.P(
+            "Próximas etapas recomendadas a partir de los hallazgos del análisis exploratorio.",
+            className="section-body",
+        ), width=12), className="mb-3"),
+
+        dbc.Row([
+            dbc.Col(html.Div([
+                html.Div([
+                    html.Div("1", style={"width":"36px","height":"36px","borderRadius":"50%","backgroundColor":C_BLUE,"color":"#fff","fontWeight":"800","fontSize":"0.85rem","display":"flex","alignItems":"center","justifyContent":"center","flexShrink":"0"}),
+                    html.Div("Modelos de ensamble avanzados (stacking/blending)", style={"fontWeight":"700","fontSize":"0.92rem","color":C_DARK,"marginLeft":"12px"}),
+                ], style={"display":"flex","alignItems":"center","marginBottom":"10px"}),
+                html.P("Probar modelos de ensamble avanzados, como stacking o blending para combinar los mejores algoritmos y mejorar la precisión en la detección de los fraudes.", style={"fontSize":"0.85rem","color":"#475569","lineHeight":"1.6","marginBottom":0,"paddingLeft":"48px"}),
+            ], style={"background":"#fff","borderRadius":"12px","padding":"18px 16px","boxShadow":"0 2px 12px rgba(0,0,0,0.07)","borderLeft":f"4px solid {C_BLUE}","height":"100%"}), md=6, className="mb-3"),
+
+            dbc.Col(html.Div([
+                html.Div([
+                    html.Div("2", style={"width":"36px","height":"36px","borderRadius":"50%","backgroundColor":C_GREEN,"color":"#fff","fontWeight":"800","fontSize":"0.85rem","display":"flex","alignItems":"center","justifyContent":"center","flexShrink":"0"}),
+                    html.Div("Contacto con el banco para interpretar variables PCA", style={"fontWeight":"700","fontSize":"0.92rem","color":C_DARK,"marginLeft":"12px"}),
+                ], style={"display":"flex","alignItems":"center","marginBottom":"10px"}),
+                html.P("Hablar directamente con el banco para interpretar el significado detrás de las variables PCA y sacar conclusiones mucho más claras y útiles.", style={"fontSize":"0.85rem","color":"#475569","lineHeight":"1.6","marginBottom":0,"paddingLeft":"48px"}),
+            ], style={"background":"#fff","borderRadius":"12px","padding":"18px 16px","boxShadow":"0 2px 12px rgba(0,0,0,0.07)","borderLeft":f"4px solid {C_GREEN}","height":"100%"}), md=6, className="mb-3"),
+
+            dbc.Col(html.Div([
+                html.Div([
+                    html.Div("3", style={"width":"36px","height":"36px","borderRadius":"50%","backgroundColor":C_GOLD,"color":"#fff","fontWeight":"800","fontSize":"0.85rem","display":"flex","alignItems":"center","justifyContent":"center","flexShrink":"0"}),
+                    html.Div("Optimización del umbral de decisión", style={"fontWeight":"700","fontSize":"0.92rem","color":C_DARK,"marginLeft":"12px"}),
+                ], style={"display":"flex","alignItems":"center","marginBottom":"10px"}),
+                html.P("Hay que ajustarlo según lo que el banco priorice, buscando el mejor equilibrio entre atrapar los fraudes reales y no generar tantas falsas alarmas que molesten a los clientes.", style={"fontSize":"0.85rem","color":"#475569","lineHeight":"1.6","marginBottom":0,"paddingLeft":"48px"}),
+            ], style={"background":"#fff","borderRadius":"12px","padding":"18px 16px","boxShadow":"0 2px 12px rgba(0,0,0,0.07)","borderLeft":f"4px solid {C_GOLD}","height":"100%"}), md=6, className="mb-3"),
+
+            dbc.Col(html.Div([
+                html.Div([
+                    html.Div("4", style={"width":"36px","height":"36px","borderRadius":"50%","backgroundColor":C_PURPLE,"color":"#fff","fontWeight":"800","fontSize":"0.85rem","display":"flex","alignItems":"center","justifyContent":"center","flexShrink":"0"}),
+                    html.Div("Monitoreo y actualización del modelo en producción", style={"fontWeight":"700","fontSize":"0.92rem","color":C_DARK,"marginLeft":"12px"}),
+                ], style={"display":"flex","alignItems":"center","marginBottom":"10px"}),
+                html.P("El proyecto no termina al entrenar el modelo, hay que dejar planteado un sistema de monitoreo constante para actualizarlo a medida que aparezcan nuevas tácticas de estafa.", style={"fontSize":"0.85rem","color":"#475569","lineHeight":"1.6","marginBottom":0,"paddingLeft":"48px"}),
+            ], style={"background":"#fff","borderRadius":"12px","padding":"18px 16px","boxShadow":"0 2px 12px rgba(0,0,0,0.07)","borderLeft":f"4px solid {C_PURPLE}","height":"100%"}), md=6, className="mb-3"),
+        ], className="mb-4"),
 
 
 

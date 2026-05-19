@@ -145,13 +145,10 @@ def render_section(h, d, a, hb, ha):
 @app.callback(
     Output("page-content", "children", allow_duplicate=True),
     Input("main-tabs", "value"),
-    Input("current-section", "data"),
     prevent_initial_call=True,
 )
-def render_dashboard_subtab(tab, section):
-    if section != "dashboard":
-        from dash import no_update
-        return no_update
+def render_dashboard_subtab(tab):
+    from dash import ctx
     return render_dashboard_tab(tab)
 
 

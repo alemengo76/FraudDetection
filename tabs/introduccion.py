@@ -78,7 +78,7 @@ def layout():
         dbc.Row(dbc.Col(html.Div([
             html.H5("Sobre este dashboard", className="section-title"),
             html.P(
-                "Esta aplicación integra el análisis exploratorio, las pruebas estadísticas y en el futuro, el modelo predictivo. Lo que permite analizar patrones de las variables, y en un futuro evaluar el modelo y hacer predicciones.",
+                "Esta aplicación integra el análisis exploratorio, las pruebas estadísticas y el modelo predictivo. Lo que permite analizar patrones de las variables, evaluar el modelo y hacer predicciones.",
                 className="section-body"
             ),
         ]), width=12)),

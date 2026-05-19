@@ -27,11 +27,11 @@ LIMITACIONES = [
     ),
     (
         "Datos de un único período",
-        "El dataset contiene transacciones de dos días de septiembre de 2013, pero los patrones de fraude pueden variar estacionalmente y con el tiempo, por lo que los hallazgos del análisis exploratorio podrían no generalizarse a períodos diferentes o a contextos geográficos distintos al europeo. A menos, que solo se tenga la intención de centrarse en este tiempo por un contexto del que se desconoce.",
+        "El dataset contiene transacciones de dos días de septiembre de 2013, pero los patrones de fraude pueden variar estacionalmente y con el tiempo, por lo que los hallazgos del análisis exploratorio podrían no generalizarse a períodos diferentes o a contextos geográficos distintos al europeo. A menos, que se requiera por un contexto del que se desconoce.",
     ),
     (
-        "Ausencia de contexto externo",
-        "El análisis solo puede trabajar con las variables disponibles en el dataset. Variables que podrían enriquecer el EDA y mejorar la comprensión del fraude, como el historial de los titulares de tarjetas de crédito, la geolocalización de la transacción, el tipo de comercio o el canal de pago, lamentablemente no están disponibles debido a restricciones de privacidad y limitan las inferencias útiles para detectar fraude.",
+        "Umbral de decisión fijo",
+        "El modelo usa el umbral de decisión por defecto de 0.5 para realizar las clasificaciones. Esto puede afectar el rendimiento en un entorno real, ya que dependiendo del nivel de riesgo que se quiera manejar, podría ser más importante reducir los falsos positivos o los falsos negativos. No obstante, dado que en este caso no sabemos los intereses del banco se mantuvo en 0.5.",
     ),
     (
         "Sesgo de supervivencia",

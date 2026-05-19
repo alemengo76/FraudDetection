@@ -23,7 +23,7 @@ def layout():
         dbc.Row([
             _fase("01", "Fuente de datos",
                   "Dataset",
-                  "Se utilizó el dataset Credit Card Fraud Detection (Kaggle / ULB Machine Learning Group), que tiene 284.807 transacciones realizadas por titulares de tarjetas de crédito europeos en dos días de septiembre de 2013."),
+                  "Se utilizó el dataset Credit Card Fraud Detection (Kaggle / ULB Machine Learning Group), que tiene 284.807 transacciones realizadas por titulares de tarjetas de crédito europeos durante dos días de septiembre del año 2013."),
             _fase("02", "Limpieza y preparación",
                   "Preprocesamiento",
                   "Se identificaron y eliminaron 1.081 registros duplicados, quedando 283.726 transacciones únicas. También, se verificó la presencia de valores faltantes (NaN), sin encontrar ninguno. La variable Class fue transformada a string para el EDA y a float64 para el modelado."),
@@ -35,7 +35,7 @@ def layout():
                   "Se realizó un análisis univariado y bivariado con estadísticas y visualizaciones interactivas. Se incluyen la prueba no paramétrica U de Mann-Whitney, el coeficiente RBC como tamaño de efecto, y un análisis multivariado con matrices de correlación de Spearman y cálculo del VIF."),
             _fase("04", "Dashboard interactivo",
                   "Implementación en Dash",
-                  "Los resultados del análisis se integraron en una aplicación Dash modular (Detección de Fraude Financiero) con arquitectura de tabs. En el futuro se planea implementar un modelo de regresión logística para generar un formulario intaractivo."),
+                  "Los resultados del análisis se integraron en una aplicación Dash modular (Detección de Fraude Financiero) con arquitectura de tabs. Se compararon varios modelos y se eligió el mejor para generar un formulario interactivo."),
         ], className="mb-3"),
             
 

@@ -114,28 +114,19 @@ dbc.Row([
         ),
     ]), md=4),
 
+    
     dbc.Col(dbc.Card([
         html.Div([
-            html.Span("Poder discriminante", style={"flex": "1"}),
-            html.Span("▼", id="rbc-arrow", style={"fontSize": "0.75rem"}),
-        ], className="card-header-custom", id="rbc-toggle",
+            html.Span("Optuna", style={"flex": "1"}),
+            html.Span("▼", id="optuna-arrow", style={"fontSize": "0.75rem"}),
+        ], className="card-header-custom", id="optuna-toggle",
            style={"cursor": "pointer", "display": "flex", "alignItems": "center"}),
         dbc.Collapse(
-            dbc.CardBody([
-                html.P(
-                    "Debido a que el gran tamaño muestral puede hacer que diferencias pequeñas resulten estadísticamente significativas, para medir la capacidad discriminativa de cada variable, se calculó "
-                    "el coeficiente RBC (Rank Biserial Correlation) como medida de tamaño de "
-                    "efecto, y un índice de solapamiento basado en los rangos intercuartílicos "
-                    "(IQR) de ambas clases. Luego, tenemos: ",
-                    className="section-body", style={"marginBottom": "12px"},
-                ),
-                html.Ul([
-                    html.Li([html.Strong("Alto poder discriminante: "), "cuando los intervalos intercuartílicos no se solapan y el coeficiente RBC es |RBC| > 0.5."], className="section-body", style={"marginBottom": "6px"}),
-                    html.Li([html.Strong("Moderado poder discriminante: "), "cuando el tamaño del efecto es moderado (0.3 ≤ |RBC| ≤ 0.5), aunque los cuartiles puedan superponerse parcialmente."], className="section-body", style={"marginBottom": "6px"}),
-                    html.Li([html.Strong("Bajo poder discriminante: "), "cuando los cuartiles se solapan ampliamente y el tamaño del efecto es muy bajo (|RBC| < 0.3)."], className="section-body"),
-                ], style={"marginBottom": 0, "paddingLeft": "18px"}),
-            ]),
-            id="rbc-collapse", is_open=False,
+            dbc.CardBody(html.P(
+                "Optuna es una librería de optimización de hiperparámetros para encontrar la mejor configuración de un modelo. Utiliza algoritmos inteligentes y adaptativos para la búsqueda de la mejor configuración, que aprenden de la experiencia previa y no son aleatorios. También admite la poda para detener ensayos con bajo rendimiento para acelerar la búsqueda.",
+                className="section-body", style={"marginBottom": 0},
+            )),
+            id="optuna-collapse", is_open=False,
         ),
     ]), md=4),
 ], className="mb-4"),
@@ -181,18 +172,31 @@ dbc.Row([
         ),
     ]), md=4),
 
+    
+
+
     dbc.Col(dbc.Card([
         html.Div([
-            html.Span("Optuna", style={"flex": "1"}),
-            html.Span("▼", id="optuna-arrow", style={"fontSize": "0.75rem"}),
-        ], className="card-header-custom", id="optuna-toggle",
+            html.Span("Poder discriminante", style={"flex": "1"}),
+            html.Span("▼", id="rbc-arrow", style={"fontSize": "0.75rem"}),
+        ], className="card-header-custom", id="rbc-toggle",
            style={"cursor": "pointer", "display": "flex", "alignItems": "center"}),
         dbc.Collapse(
-            dbc.CardBody(html.P(
-                "Optuna es una librería de optimización de hiperparámetros para encontrar la mejor configuración de un modelo. Utiliza algoritmos inteligentes y adaptativos para la búsqueda de la mejor configuración, que aprenden de la experiencia previa y no son aleatorios. También admite la poda para detener ensayos con bajo rendimiento para acelerar la búsqueda.",
-                className="section-body",
-            )),
-            id="optuna-collapse", is_open=False,
+            dbc.CardBody([
+                html.P(
+                    "Debido a que el gran tamaño muestral puede hacer que diferencias pequeñas resulten estadísticamente significativas, para medir la capacidad discriminativa de cada variable, se calculó "
+                    "el coeficiente RBC (Rank Biserial Correlation) como medida de tamaño de "
+                    "efecto, y un índice de solapamiento basado en los rangos intercuartílicos "
+                    "(IQR) de ambas clases. Luego, tenemos: ",
+                    className="section-body", style={"marginBottom": "12px"},
+                ),
+                html.Ul([
+                    html.Li([html.Strong("Alto poder discriminante: "), "cuando los intervalos intercuartílicos no se solapan y el coeficiente RBC es |RBC| > 0.5."], className="section-body", style={"marginBottom": "6px"}),
+                    html.Li([html.Strong("Moderado poder discriminante: "), "cuando el tamaño del efecto es moderado (0.3 ≤ |RBC| ≤ 0.5), aunque los cuartiles puedan superponerse parcialmente."], className="section-body", style={"marginBottom": "6px"}),
+                    html.Li([html.Strong("Bajo poder discriminante: "), "cuando los cuartiles se solapan ampliamente y el tamaño del efecto es muy bajo (|RBC| < 0.3)."], className="section-body"),
+                ], style={"marginBottom": 0, "paddingLeft": "18px"}),
+            ]),
+            id="rbc-collapse", is_open=False,
         ),
     ]), md=4),
 ], className="mb-4"),
