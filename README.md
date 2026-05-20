@@ -6,6 +6,15 @@
 
 ---
 
+
+## Ver Dashboard en Vivo
+
+[![Ver Dashboard](https://img.shields.io/badge/Ver%20Dashboard-Online-brightgreen?style=for-the-badge&logo=plotly)](https://github.com/alemengo76/FraudDetection)
+
+**[Accede al dashboard aquí](https://github.com/alemengo76/FraudDetection)**
+
+---
+
 ## Descripción del Proyecto
 
 El fraude con tarjetas de crédito es una gran amenaza para el sistema financiero en todo el mundo. Entonces, es importante detectarlo a tiempo para proteger a los clientes y evitar pérdidas que pueden llegar a ser millonarias.
