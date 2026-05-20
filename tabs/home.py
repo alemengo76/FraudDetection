@@ -228,12 +228,14 @@ def layout_home():
                 html.Div([
                     _primary_btn("bi bi-grid-fill", "Ver Dashboard", "home-btn-dashboard-real"),
                     html.Div([
-                        _pill_btn_link("bi bi-github",   "GitHub",
-                                       "https://github.com/alemengo76/FraudDetection"),
-                        _pill_btn_link("bi bi-database", "Kaggle",
-                                       "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"),
-                        _pill_btn_internal("bi bi-people-fill", "Equipo", "home-btn-about-real"),
-                    ], style={"display": "flex", "gap": "10px", "flexWrap": "wrap"}),
+    _pill_btn_link("bi bi-github",   "GitHub",
+                   "https://github.com/alemengo76/FraudDetection"),
+    _pill_btn_link("bi bi-database", "Kaggle",
+                   "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"),
+    _pill_btn_link("bi bi-youtube",  "Video",         
+                   "https://youtu.be/3HNNNr5R16I?si=yurn9yB3Icd0IQp_"),
+    _pill_btn_internal("bi bi-people-fill", "Equipo", "home-btn-about-real"),
+], style={"display": "flex", "gap": "10px", "flexWrap": "wrap"}),
                 ], style={"display": "flex", "gap": "14px", "flexWrap": "wrap",
                           "alignItems": "center"}),
 
