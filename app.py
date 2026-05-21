@@ -54,7 +54,7 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Div("Detección de Fraude Financiero", className="navbar-brand-text"),
-            html.Div("Credit Card Fraud Detection · ULB Dataset · Regresión Logística",
+            html.Div("Credit Card Fraud Detection · ULB Dataset · Modelo predictivo",
                      className="navbar-subtitle"),
         ]),
         html.Div([
@@ -171,3 +171,9 @@ def render_dashboard_tab(tab: str):
     content = fn() if fn else html.Div("Pestaña no encontrada.", style={"padding": "40px"})
     
     return html.Div(content, key=f"{tab}-{time.time()}", className="tab-fade-in")
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8050))
+    debug = os.environ.get("DEBUG", "false").lower() == "true"
+    app.run(host="0.0.0.0", port=port, debug=debug)
+    
