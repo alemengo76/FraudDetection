@@ -217,7 +217,7 @@ def layout_home():
                 }),
 
                 html.P(
-                    "284K transacciones reales · EDA completo · Regresión Logística",
+                    "284K transacciones reales · EDA completo · Modelo predictivo",
                     style={
                         "fontSize": "0.95rem", "color": "#8a9bbf",
                         "margin": "0 0 36px 0", "lineHeight": "1.6",

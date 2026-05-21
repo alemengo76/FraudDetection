@@ -28,7 +28,8 @@ from sklearn.metrics import (
 )
 
 # Al inicio del módulo, después de los imports
-_CACHE_PATH = r"C:\Users\Alejandra\Documents\fraud_dashboard\assets\metricas_cache.json"
+_BASE_DIR      = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_CACHE_PATH    = os.path.join(_BASE_DIR, "assets", "metricas_cache.json")
 try:
     with open(_CACHE_PATH) as f:
         _CACHE = json.load(f)
@@ -136,8 +137,8 @@ EJEMPLO_LEGITIMO = {
 }
 
 
-MODELOS_DIR = r"C:\Users\Alejandra\Documents\Modelos_Optimizados"
-DATA_TEST_PATH = r"C:\Users\Alejandra\Documents\Modelos_Optimizados\Xy_test.joblib"
+MODELOS_DIR    = os.path.join(_BASE_DIR, "modelos")
+DATA_TEST_PATH = os.path.join(MODELOS_DIR, "Xy_test.joblib")
 
 # Mapa nombre_tecnica → sufijo en nombre de archivo
 _TECNICA_SUFIJO = {

@@ -8,6 +8,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output
 import time
+import os
 
 from tabs import (
     introduccion, contexto, problema, objetivos,
@@ -170,7 +171,3 @@ def render_dashboard_tab(tab: str):
     content = fn() if fn else html.Div("Pestaña no encontrada.", style={"padding": "40px"})
     
     return html.Div(content, key=f"{tab}-{time.time()}", className="tab-fade-in")
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8050)
