@@ -9,9 +9,9 @@
 
 ## Ver Dashboard en Vivo
 
-[![Ver Dashboard](https://img.shields.io/badge/Ver%20Dashboard-Online-brightgreen?style=for-the-badge&logo=plotly)](https://github.com/alemengo76/FraudDetection)
+[![Ver Dashboard](https://img.shields.io/badge/Ver%20Dashboard-Online-brightgreen?style=for-the-badge&logo=plotly)](https://frauddashboard-689867463634.us-central1.run.app)
 
-**[Accede al dashboard aquí](https://github.com/alemengo76/FraudDetection)**
+**[Accede al dashboard aquí](https://frauddashboard-689867463634.us-central1.run.app)**
 
 ---
 
